@@ -120,23 +120,13 @@ h1{margin:0;line-height:0}
   .hud{display:none}
 }
 
-/* ---------- tatouage : gravures au trait dans le fond, parcourues de lumière ---------- */
+/* ---------- tatouage : des gravures encrées dans le fond, qui s'illuminent trait par trait ---------- */
 #tattoo{position:absolute;left:0;top:0;width:100%;height:0;pointer-events:none;overflow:hidden;z-index:0}
 main,footer{position:relative;z-index:1}
-#tattoo svg{position:absolute;overflow:visible}
-#tattoo path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
-#tattoo .b{opacity:var(--a)}
-#tattoo .b .l1{stroke:#8f6dff;stroke-width:1}
-#tattoo .b .l2{stroke:#5f78ff;stroke-width:.8}
-#tattoo .b .ink{fill:#8f6dff;stroke:none}
-#tattoo .f{opacity:var(--fa)}
-#tattoo .f path{stroke-dasharray:.09 2.2;stroke-dashoffset:.09}
-#tattoo .f .g{stroke:#6d4dff;stroke-width:8;opacity:.36}
-#tattoo .f .c{stroke:#efe8ff;stroke-width:1.7}
-#tattoo .f .c.bl{stroke:#bcd2ff}
-#tattoo svg.on .f path{animation:flow var(--d,5s) linear var(--o,0s) infinite}
-@keyframes flow{to{stroke-dashoffset:-2.2}}
-@media (prefers-reduced-motion:reduce){#tattoo .f{display:none}}
+.tat{position:absolute}
+.tat i{position:absolute;inset:0;background:#8467ff;opacity:var(--a);-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.tat canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .4s}
+.tat.lit canvas{opacity:var(--la);filter:drop-shadow(0 0 4px rgba(170,140,255,.85)) drop-shadow(0 0 12px rgba(90,110,255,.45))}
 
 /* ---------- sections ---------- */
 section{padding-block:92px}
@@ -1506,173 +1496,74 @@ const resEl = document.querySelector('.res');
 if (resEl && !reduce) { resEl.classList.add('arm'); new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { resEl.classList.add('in'); ob.disconnect(); } }, { threshold: 0.25 }).observe(resEl); }
 
 
-/* ============ tatouage : des gravures liées à la sécurité de l'IA, de plus en plus denses vers le bas ============ */
-const f1 = v => Math.round(v * 10) / 10;
-const Ci = (cx, cy, r) => `M${f1(cx - r)} ${f1(cy)}a${f1(r)} ${f1(r)} 0 1 0 ${f1(2 * r)} 0a${f1(r)} ${f1(r)} 0 1 0 ${f1(-2 * r)} 0`;
-const Ln = (x1, y1, x2, y2) => `M${f1(x1)} ${f1(y1)}L${f1(x2)} ${f1(y2)}`;
-const PL = (pts, close) => 'M' + pts.map(p => f1(p[0]) + ' ' + f1(p[1])).join('L') + (close ? 'Z' : '');
-const TAT = {
-  // l'œil : le modèle qui regarde, et qu'on regarde
-  eye(r){
-    const a = [], b = [], fl = [];
-    a.push('M6 50Q50 12 94 50Q50 88 6 50', Ci(50, 50, 18), Ci(50, 50, 13.5));
-    b.push('M13 50Q50 21 87 50Q50 79 13 50');
-    for (let i = 0; i < 44; i++) { const t = i / 44 * 6.283, r2 = i % 2 ? 13 : 16.5; a.push(Ln(50 + Math.cos(t) * 7.5, 50 + Math.sin(t) * 7.5, 50 + Math.cos(t) * r2, 50 + Math.sin(t) * r2)); }
-    for (let y = 44.6; y <= 55.4; y += 1.35) { const h = Math.sqrt(Math.max(0, 36 - (y - 50) ** 2)); a.push(Ln(50 - h, y, 50 + h, y)); }
-    for (let i = 0; i < 72; i++) { const t = i / 72 * 6.283, r1 = 47 + (i % 3) * 1.5, r2 = r1 + 4 + r() * 14; b.push(Ln(50 + Math.cos(t) * r1, 50 + Math.sin(t) * r1 * 0.9, 50 + Math.cos(t) * r2, 50 + Math.sin(t) * r2 * 0.9)); }
-    for (let i = 0; i < 9; i++) { const u = 0.2 + i * 0.075, x = 6 + 88 * u, y = 50 - 76 * u * (1 - u) * 0.98; a.push(Ln(x, y, x + (x - 50) * 0.08, y - 5)); }
-    fl.push('M6 50Q50 12 94 50', 'M94 50Q50 88 6 50', Ci(50, 50, 18));
-    return { a, b, fl, ink: [Ci(44, 44, 1.6)] };
-  },
-  // le réseau de neurones : le signal qui le traverse
-  net(r){
-    const a = [], b = [], fl = [], L = [3, 5, 5, 2], X = [10, 36, 64, 90];
-    const N = L.map((n, li) => Array.from({ length: n }, (_, i) => [X[li], 50 + (i - (n - 1) / 2) * Math.min(17, 70 / Math.max(1, n - 1))]));
-    for (let li = 0; li < 3; li++) N[li].forEach(p => N[li + 1].forEach(q => b.push(Ln(p[0] + 3, p[1], q[0] - 3, q[1]))));
-    N.flat().forEach(p => { a.push(Ci(p[0], p[1], 3)); a.push(Ci(p[0], p[1], 1.3)); });
-    for (let k = 0; k < 4; k++) fl.push(PL(N.map(col => col[(r() * col.length) | 0])));
-    return { a, b, fl };
-  },
-  // la puce : les pistes par où passent les données
-  chip(r){
-    const a = [], b = [], fl = [];
-    a.push(PL([[34, 34], [66, 34], [66, 66], [34, 66]], true), PL([[40, 40], [60, 40], [60, 60], [40, 60]], true));
-    for (let c = 82; c < 120; c += 2.6) { const x1 = Math.max(40, c - 60), x2 = Math.min(60, c - 40); if (x2 > x1) b.push(Ln(x1, c - x1, x2, c - x2)); }
-    for (let i = 0; i < 6; i++) {
-      const p = 37 + i * 5.2, k = 6 + (i % 3) * 5;
-      const tr = [
-        [[p, 34], [p, 34 - k], [p + (i < 3 ? -8 : 8), 34 - k - 8], [p + (i < 3 ? -8 : 8), 6 - (i % 2) * 4]],
-        [[p, 66], [p, 66 + k], [p + (i < 3 ? -8 : 8), 66 + k + 8], [p + (i < 3 ? -8 : 8), 94 + (i % 2) * 4]],
-        [[34, p], [34 - k, p], [34 - k - 8, p + (i < 3 ? -8 : 8)], [4 - (i % 2) * 4, p + (i < 3 ? -8 : 8)]],
-        [[66, p], [66 + k, p], [66 + k + 8, p + (i < 3 ? -8 : 8)], [96 + (i % 2) * 4, p + (i < 3 ? -8 : 8)]]
-      ];
-      tr.forEach((t, j) => { const d = PL(t); a.push(d); const e = t[t.length - 1]; a.push(Ci(e[0], e[1], 1.4)); if ((i + j) % 3 === 0) fl.push(d); });
-    }
-    return { a, b, fl };
-  },
-  // le cadenas : durcir
-  lock(r){
-    const a = [], b = [], fl = [];
-    const sh = 'M34 46L34 32A16 16 0 0 1 66 32L66 46', body = PL([[26, 46], [74, 46], [74, 86], [26, 86]], true);
-    a.push(sh, 'M40 46L40 32A10 10 0 0 1 60 32L60 46', body, Ci(50, 60, 4), PL([[47.6, 62.5], [46, 74], [54, 74], [52.4, 62.5]], true));
-    for (let y = 49; y < 85; y += 2.4) { if (y > 54 && y < 76) { b.push(Ln(28, y, 43, y), Ln(57, y, 72, y)); } else b.push(Ln(28, y, 72, y)); }
-    for (let i = 0; i < 60; i++) { const t = i / 60 * 6.283, r1 = 47, r2 = r1 + 3 + r() * 11; b.push(Ln(50 + Math.cos(t) * r1, 58 + Math.sin(t) * r1, 50 + Math.cos(t) * r2, 58 + Math.sin(t) * r2)); }
-    fl.push(sh, body);
-    return { a, b, fl };
-  },
-  // le serpent qui se mord la queue : l'injection qui boucle, autour d'une puce
-  serpent(r){
-    const a = [], b = [], fl = [], C = [], O = [], I = [], n = 160;
-    for (let i = 0; i <= n; i++) {
-      const u = i / n, t = 0.35 + u * 6.283 * 0.93, rr = 34 + 2.4 * Math.sin(t * 6), w = 1 + 6 * Math.sin(Math.min(1, u * 1.15) * Math.PI * 0.5);
-      const c = [50 + Math.cos(t) * rr, 50 + Math.sin(t) * rr]; C.push(c);
-      O.push([50 + Math.cos(t) * (rr + w / 2), 50 + Math.sin(t) * (rr + w / 2)]); I.push([50 + Math.cos(t) * (rr - w / 2), 50 + Math.sin(t) * (rr - w / 2)]);
-      if (i % 2 === 0) b.push(Ln(O[i][0], O[i][1], I[i][0], I[i][1]));
-    }
-    a.push(PL(O), PL(I));
-    const h = C[n], t1 = 0.35 + 6.283 * 0.93;
-    a.push(PL([[h[0] + Math.cos(t1 + 1.3) * 5, h[1] + Math.sin(t1 + 1.3) * 5], [h[0] + Math.cos(t1) * 9, h[1] + Math.sin(t1) * 9], [h[0] + Math.cos(t1 - 1.3) * 5, h[1] + Math.sin(t1 - 1.3) * 5]]));
-    a.push(PL([[40, 40], [60, 40], [60, 60], [40, 60]], true));
-    for (let k = 0; k < 4; k++) { const p = 43 + k * 4.6; a.push(Ln(p, 40, p, 36), Ln(p, 60, p, 64), Ln(40, p, 36, p), Ln(60, p, 64, p)); }
-    a.push(Ci(50, 50, 4));
-    fl.push(PL(C));
-    return { a, b, fl, ink: [Ci(h[0] + Math.cos(t1 + 0.7) * 3.5, h[1] + Math.sin(t1 + 0.7) * 3.5, 0.9)] };
-  },
-  // le bouclier : protéger
-  shield(r){
-    const a = [], b = [], fl = [];
-    const out = 'M50 6L86 18L82 56Q72 82 50 95Q28 82 18 56L14 18Z';
-    a.push(out, 'M50 13L79 23L76 55Q67 76 50 87Q33 76 24 55L21 23Z');
-    for (let x = 24; x < 50; x += 2.1) { const yt = 23 - (x - 21) * 10 / 29 + 1.5, u = (x - 24) / 26, yb = 55 + 32 * Math.pow(u, 0.75) - 1.5; b.push(Ln(x, yt, x, yb)); }
-    const chk = PL([[38, 50], [47, 60], [64, 38]]);
-    a.push(chk);
-    fl.push(out, chk);
-    return { a, b, fl };
-  },
-  // le soleil de rayons : la signature des gravures
-  sun(r){
-    const a = [], b = [], fl = [];
-    a.push(Ci(50, 50, 10), Ci(50, 50, 14));
-    b.push(Ci(50, 50, 17));
-    for (let i = 0; i < 96; i++) { const t = i / 96 * 6.283, r1 = 19, r2 = r1 + (i % 2 ? 10 : 22) + r() * 16; b.push(Ln(50 + Math.cos(t) * r1, 50 + Math.sin(t) * r1, 50 + Math.cos(t) * r2, 50 + Math.sin(t) * r2)); }
-    for (let i = 0; i < 6; i++) { const t = i / 6 * 6.283 + 0.3; fl.push(Ln(50 + Math.cos(t) * 19, 50 + Math.sin(t) * 19, 50 + Math.cos(t) * 62, 50 + Math.sin(t) * 62)); }
-    fl.push(Ci(50, 50, 14));
-    return { a, b, fl };
-  }
-};
-const tatLayer = document.getElementById('tattoo');
-const tatIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('on', e.isIntersecting)), { rootMargin: '200px' }) : null;
-function tatSvg(x, y, w, h, vb, rot, alpha, fa, parts, rr){
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', vb);
-  svg.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${rot}deg);--a:${alpha};--fa:${fa}`;
-  let html = `<g class="b">${parts.a.length ? `<path class="l1" d="${parts.a.join('')}"/>` : ''}${parts.b.length ? `<path class="l2" d="${parts.b.join('')}"/>` : ''}${parts.ink ? `<path class="ink" d="${parts.ink.join('')}"/>` : ''}</g><g class="f">`;
-  parts.fl.forEach((d, i) => {
-    const dur = (4 + rr() * 5).toFixed(2), off = (-rr() * 9).toFixed(2), bl = rr() < 0.4 ? ' bl' : '';
-    html += `<path class="g" pathLength="1" d="${d}" style="--d:${dur}s;--o:${off}s"/><path class="c${bl}" pathLength="1" d="${d}" style="--d:${dur}s;--o:${off}s"/>`;
-  });
-  svg.innerHTML = html + '</g>';
-  tatLayer.appendChild(svg);
-  if (tatIO) tatIO.observe(svg); else svg.classList.add('on');
-  return svg;
-}
+/* ============ tatouage : des gravures liées à la sécurité de l'IA, de plus en plus présentes vers le bas.
+   La gravure est posée une fois (un masque CSS, qui défile avec la page sans rien coûter) ;
+   de temps en temps, une lumière la parcourt et allume ses traits les uns après les autres. ============ */
+const TAT_KINDS = ['eye', 'knot', 'lock', 'armillary', 'solid', 'key', 'scales'];
+const tatLayer = document.getElementById('tattoo'), tatImg = {};
+const tatImage = k => tatImg[k] || (tatImg[k] = Object.assign(new Image(), { decoding: 'async', src: `assets/tat/${k}.webp` }));
+let tatItems = [];
+const tatIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+  const it = e.target._tat; it.vis = e.isIntersecting;
+  if (it.vis && !it.loaded) { it.loaded = true; it.el.style.setProperty('--m', `url(assets/tat/${it.k}.webp)`); tatImage(it.k); }
+}), { rootMargin: '500px 0px' }) : null;
 function buildTattoo(){
   if (!tatLayer) return;
   if (tatIO) tatIO.disconnect();
-  tatLayer.innerHTML = ''; tatLayer.style.height = '0px';
+  tatLayer.innerHTML = ''; tatLayer.style.height = '0px'; tatItems = [];
   const W = document.documentElement.clientWidth, H = document.documentElement.scrollHeight;
   tatLayer.style.height = H + 'px';
   const start = document.getElementById('projets').getBoundingClientRect().top + scrollY;
   const band = document.querySelector('.band'), bTop = band ? band.getBoundingClientRect().top + scrollY : H, bBot = band ? bTop + band.offsetHeight : H;
   const r = rng(2026), small = W < 760, margin = Math.max(0, (W - 1240) / 2);
-  const kinds = ['net', 'eye', 'chip', 'lock', 'serpent', 'shield', 'sun'];
-  let y = start + 40, k = 0, side = 0;
-  while (y < H - 120) {
+  let y = start + 60, k = 0, side = 0;
+  while (y < H - 160) {
     const f = clamp((y - start) / (H - start), 0, 1);
-    if (y > bTop - 200 && y < bBot) { y = bBot + 40; continue; }
-    const per = f < 0.22 ? 1 : f < 0.55 ? 2 : 3;
+    if (y > bTop - 260 && y < bBot) { y = bBot + 60; continue; }
+    const per = f < 0.3 ? 1 : 2;
     for (let j = 0; j < per; j++) {
-      const kind = kinds[k++ % kinds.length];
-      let size = lerp(small ? 180 : 230, small ? 280 : 470, f) * (0.8 + 0.4 * r());
-      const s = side++ % 2, center = j === 2;
-      let x;
-      if (center) x = W * (0.25 + 0.5 * r()) - size / 2;
-      else if (margin > size * 0.45) x = s ? W - margin / 2 - size / 2 + (r() - 0.5) * 60 : margin / 2 - size / 2 + (r() - 0.5) * 60;
-      else x = s ? W - size * (0.55 + 0.2 * r()) : -size * (0.45 - 0.2 * r());
-      let alpha = lerp(0.15, 0.44, f) * (center ? 0.55 : 1) * (small ? 0.8 : 1);
-      tatSvg(x, y + (r() - 0.5) * 120, size, size, '0 0 100 100', (r() - 0.5) * 24, alpha.toFixed(3), (0.45 + 0.55 * f).toFixed(2), TAT[kind](r), r);
+      const s = Math.round(lerp(small ? 190 : 250, small ? 270 : 440, f) * (0.85 + 0.3 * r()));
+      const right = side++ % 2;
+      let x = margin > s * 0.5
+        ? (right ? W - margin / 2 - s / 2 : margin / 2 - s / 2) + (r() - 0.5) * 50
+        : (right ? W - s * (0.5 + 0.15 * r()) : -s * (0.5 - 0.15 * r()));
+      const it = {
+        k: TAT_KINDS[k++ % TAT_KINDS.length], s, vis: false, loaded: false,
+        a: (lerp(0.07, 0.2, f) * (small ? 0.75 : 1)).toFixed(3), la: lerp(0.45, 0.85, f).toFixed(2),
+        sw: 5 + r() * 2.5, per: 11 + r() * 9, off: r() * 20, ang: (0.35 + r() * 0.9) * (r() < 0.5 ? 1 : -1) + Math.PI / 2 * (r() < 0.5 ? 0 : 1)
+      };
+      const el = document.createElement('div'); el.className = 'tat';
+      el.style.cssText = `left:${Math.round(x)}px;top:${Math.round(y + (r() - 0.5) * 140)}px;width:${s}px;height:${s}px;transform:rotate(${((r() - 0.5) * 22).toFixed(1)}deg);--a:${it.a};--la:${it.la}`;
+      el.innerHTML = '<i></i><canvas></canvas>';
+      it.el = el; it.cv = el.lastChild; it.cs = Math.round(s * 0.8); it.cv.width = it.cv.height = it.cs; it.g = it.cv.getContext('2d');
+      el._tat = it; tatLayer.appendChild(el); tatItems.push(it);
+      if (tatIO) tatIO.observe(el); else { it.vis = true; it.loaded = true; el.style.setProperty('--m', `url(assets/tat/${it.k}.webp)`); }
     }
-    y += lerp(small ? 520 : 620, small ? 300 : 260, f) * (0.85 + 0.3 * r());
+    y += lerp(small ? 640 : 720, small ? 420 : 380, f) * (0.85 + 0.3 * r());
   }
-  // la colonne : un circuit qui descend le long des bords, avec de plus en plus de branches
-  const sp = { a: [], b: [], fl: [] }, xs = [Math.max(10, margin * 0.25), W - Math.max(10, margin * 0.25)];
-  xs.forEach((x0, si) => {
-    const dir = si ? -1 : 1;
-    let yy = start, seg = [[x0, yy]];
-    while (yy < H - 40) {
-      const f = clamp((yy - start) / (H - start), 0, 1), step = lerp(190, 90, f) * (0.8 + 0.4 * r());
-      yy = Math.min(H - 40, yy + step);
-      if (yy > bTop - 20 && yy < bBot + 20) { if (seg.length > 1) sp.fl.push(PL(seg)); sp.a.push(PL(seg)); yy = bBot + 30; seg = [[x0, yy]]; continue; }
-      seg.push([x0, yy]);
-      sp.a.push(Ci(x0, yy, 2.5));
-      if (r() < 0.25 + 0.6 * f) {
-        const L = (small ? 18 : 30) + r() * (small ? 30 : 110) * (0.4 + f), j = 14 + r() * 20, pts = [[x0 + dir * 2.5, yy], [x0 + dir * j, yy], [x0 + dir * (j + 12), yy + 12 * (r() < 0.5 ? 1 : -1)], [x0 + dir * (j + 12 + L), yy + 12 * (r() < 0.5 ? 1 : -1)]];
-        pts[3][1] = pts[2][1];
-        const d = PL(pts); sp.b.push(d, Ci(pts[3][0] + dir * 2, pts[3][1], 2));
-        if (r() < 0.35 + 0.4 * f) sp.fl.push(d);
-      }
-      if (seg.length > 5) { sp.fl.push(PL(seg)); sp.a.push(PL(seg)); seg = [[x0, yy]]; }
-    }
-    if (seg.length > 1) { sp.fl.push(PL(seg)); sp.a.push(PL(seg)); }
-  });
-  tatSvg(0, 0, W, H, `0 0 ${W} ${H}`, 0, '0.32', '0.9', sp, r);
 }
-let tatT = 0;
-const tatLater = () => { clearTimeout(tatT); tatT = setTimeout(buildTattoo, 250); };
-addEventListener('resize', tatLater);
-if ('ResizeObserver' in window) { let lastH = 0; new ResizeObserver(() => { const h = document.documentElement.scrollHeight; if (Math.abs(h - lastH) > 40) { lastH = h; tatLater(); } }).observe(document.body); }
+function tatFrame(t){
+  if (reduce) return;
+  for (const it of tatItems) {
+    if (!it.vis) continue;
+    const ph = ((t + it.off) % it.per) / it.sw, img = tatImg[it.k];
+    if (ph >= 1 || !img || !img.complete || !img.naturalWidth) { if (it.on) { it.on = false; it.el.classList.remove('lit'); } continue; }
+    if (!it.on) { it.on = true; it.el.classList.add('lit'); }
+    // le front de lumière avance en travers de la gravure ; derrière lui, les traits restent allumés puis s'éteignent
+    const g = it.g, S = it.cs, c = -0.25 + ph * 1.6, dx = Math.cos(it.ang), dy = Math.sin(it.ang);
+    const p0 = c - 0.55, p1 = c + 0.05, ox = S / 2 - dx * S / 2, oy = S / 2 - dy * S / 2;
+    g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, S, S); g.drawImage(img, 0, 0, S, S);
+    const gr = g.createLinearGradient(ox + dx * S * p0, oy + dy * S * p0, ox + dx * S * p1, oy + dy * S * p1);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(0.6, 'rgba(0,0,0,.35)'); gr.addColorStop(0.92, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalCompositeOperation = 'destination-in'; g.fillStyle = gr; g.fillRect(0, 0, S, S);
+  }
+}
+let tatT = 0, tatW = 0;
+const tatLater = () => { clearTimeout(tatT); tatT = setTimeout(buildTattoo, 300); };
+addEventListener('resize', () => { if (innerWidth !== tatW) { tatW = innerWidth; tatLater(); } });
+if ('ResizeObserver' in window) { let lastH = 0; new ResizeObserver(() => { const h = document.documentElement.scrollHeight; if (Math.abs(h - lastH) > 60) { lastH = h; tatLater(); } }).observe(document.querySelector('main')); }
 if (document.fonts) document.fonts.ready.then(tatLater);
-buildTattoo();
+tatW = innerWidth; buildTattoo();
 
 /* ============ boucle ============ */
 let prev = performance.now(), frameN = 0, t0Title = 0;
@@ -1689,6 +1580,7 @@ function loop(now){
   if (t2Visible) titleB.draw(t);
   if (reduce ? frameN % 30 === 0 : frameN % 2 === 0) { drawThumbs(t, dt * 2); for (const r of reals) if (r.visible) drawReal(r, t); }
   if (reduce ? frameN % 60 === 1 : frameN % 2 === 1) for (const p of plates) if (p.visible) p.draw(reduce ? 6 : t);
+  if (frameN % 2 === 0) tatFrame(t);
 }
 requestAnimationFrame(loop);
 titleA.draw(0); titleB.draw(0);
