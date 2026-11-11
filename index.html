@@ -54,12 +54,13 @@ button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:
 /* repli sans WebGL 2 : une plaque en dégradé chromé */
 .win .fb{position:absolute;inset:2%;border-radius:var(--wr,48px);background:linear-gradient(135deg,#fbfcff,#a7adbb 22%,#ffffff 38%,#5f6473 55%,#eef1f7 72%,#9aa1b2 88%,#f6f7fa)}
 .win.lm-on .fb{display:none}
-.term{position:absolute;left:50%;top:var(--ty,62%);width:var(--tw,420px);transform:translateX(-50%);color:var(--ink);font:400 var(--tf,13px)/1.75 var(--mono);letter-spacing:0;pointer-events:none;will-change:opacity}
+.screen{position:absolute;inset:var(--gi,20px);border-radius:max(8px,calc(var(--wr,40px) - var(--gi,20px)));background:rgba(13,13,15,.64);backdrop-filter:blur(26px) saturate(1.25);-webkit-backdrop-filter:blur(26px) saturate(1.25);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 1px 0 rgba(255,255,255,.14),0 1px 0 rgba(255,255,255,.35);opacity:var(--so,1);overflow:hidden}
+.term{position:absolute;inset:0;padding:calc(var(--tf,13px)*1.7) calc(var(--tf,13px)*2);color:#fff;font:400 var(--tf,13px)/1.8 var(--mono);letter-spacing:0;pointer-events:none}
 .term pre{margin:0;font:inherit;white-space:pre-wrap}
-.term .g{color:var(--mute)}
-.term .ok{color:#1f7d4b}
-.term .b{color:var(--ink);font-weight:500}
-.term .cur{display:inline-block;width:.55em;height:1.15em;background:var(--ink);vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.term .g{color:rgba(255,255,255,.46)}
+.term .ok{color:#8be6b2}
+.term .b{color:#fff;font-weight:500}
+.term .cur{display:inline-block;width:.55em;height:1.15em;background:#fff;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .go{position:absolute;left:50%;top:var(--gy,82%);transform:translateX(-50%);display:flex;align-items:center;gap:14px;white-space:nowrap;opacity:0;transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .go.show{opacity:1}
@@ -96,21 +97,45 @@ button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:
   radial-gradient(circle at 50% 50%,#e9eaf0 0,#b8bcc8 38%,#5c6070 66%,#1d1f27 82%,#a9adbb 100%);
   box-shadow:inset 0 -3px 6px rgba(0,0,0,.25),inset 0 2px 3px rgba(255,255,255,.7)}
 .bar .orb{width:38px;height:38px}
+.bird{position:relative;width:38px;padding:0;overflow:visible}
+.bird .lm{position:absolute;inset:-4px;pointer-events:none}
+.bird .fbB{width:30px;height:30px}
+.bird.lm-on .fbB{display:none}
+.bird.hop .lm{animation:hop .55s var(--ease)}
+.bird.mad .lm{animation:shake .32s linear infinite}
+@keyframes hop{30%{transform:translateY(-7px) rotate(-12deg)}62%{transform:translateY(0) rotate(5deg)}}
+@keyframes shake{25%{transform:translateX(-2px) rotate(-8deg)}75%{transform:translateX(2px) rotate(8deg)}}
 
 /* ---------- page ---------- */
 .js #site{opacity:0}
-#site.in{opacity:1;transition:opacity .9s var(--ease)}
+#site.in{opacity:1;transition:opacity .6s var(--ease)}
 #site.in .rise{animation:rise 1s var(--ease) both}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.js .land{opacity:0}
+body.landed .land{animation:land 1.2s var(--ease) both}
+body.landed .mark.land{animation:landMark 1.5s var(--ease) both}
+@keyframes land{from{opacity:0;transform:translateY(22px) scale(.97);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes landMark{from{opacity:0;transform:scale(1.4);filter:blur(16px)}to{opacity:1;transform:none;filter:none}}
+.js .bar{opacity:0;transition:opacity .8s var(--ease) .6s}
+body.landed .bar{opacity:1}
 
-.hero{padding-block:calc(96px + env(safe-area-inset-top,0px)) 10px;text-align:center}
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-block:calc(70px + env(safe-area-inset-top,0px)) 130px;text-align:center}
+.downw{position:absolute;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
+.down,.cue{display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;color:var(--mute);font-size:13px;transition:color .2s}
+.down:hover,.cue:hover{color:var(--ink)}
+.down i,.cue i{width:40px;height:40px;border-radius:50%;background:var(--chip);display:grid;place-items:center;color:var(--ink);transition:background .2s}
+.down i{animation:bob 2.4s var(--ease) infinite}
+.down:hover i,.cue:hover i{background:#ebebe8}
+.down svg,.cue svg{width:14px;height:14px}
+.cue{width:max-content;margin:64px auto 0}
+@keyframes bob{50%{transform:translateY(6px)}}
 .mark{position:relative;width:300px;height:200px;margin:0 auto 14px}
 @media (max-width:640px){.mark{width:240px;height:160px}}
 .mark .fbA{position:absolute;inset:0;display:grid;place-items:center}
 .mark.lm-on .fbA{display:none}
 h1{margin:0;font:inherit;font-weight:400}
 h1 span{display:block;color:var(--mute)}
-.hero .sub{margin:18px auto 0;max-width:38ch;color:var(--mute)}
+.hero .sub{margin:16px auto 0;max-width:36ch;color:var(--mute)}
 .ctas{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:26px}
 .btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-size:14px;transition:transform .2s var(--ease),background .2s}
 .btn:hover{background:#2c2c2a}
@@ -151,16 +176,14 @@ h1 span{display:block;color:var(--mute)}
 .cv{padding-block:96px 10px}
 .cv .label{display:flex;justify-content:center}
 .tl{position:relative;margin:34px 0 0;padding:0;list-style:none}
-.tl .rail{position:absolute;left:74px;top:26px;bottom:26px;width:6px;margin-left:-3px;border-radius:3px;background:#ececea;overflow:hidden}
-.tl .rail i{position:absolute;inset:0;border-radius:3px;clip-path:inset(0 0 calc(100% - var(--p,0%)) 0);
-  background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(255,255,255,.85) 38%,rgba(0,0,0,.18) 72%,rgba(255,255,255,.4)),
-  linear-gradient(180deg,#f7f8fb,#9aa1b2 9%,#ffffff 17%,#5f6473 26%,#eef1f7 35%,#a7adbb 46%,#ffffff 55%,#4f5463 66%,#e9ecf3 76%,#9aa1b2 88%,#fbfcff);
-  background-size:100% 100%,100% 240px;animation:flow 6s linear infinite}
-@keyframes flow{to{background-position:0 0,0 240px}}
+.tl .rail{position:absolute;left:74px;top:26px;bottom:26px;width:10px;margin-left:-5px;border-radius:5px;background:#efefed}
+.tl .rail i{position:absolute;top:0;left:50%;width:90px;height:360px;margin-left:-45px;transform-origin:50% 0;transform:scaleY(var(--s,1));pointer-events:none;
+  clip-path:inset(0 40px calc(100% - var(--p,0%)) 40px round 5px / var(--ry,5px))}
+.tl .rail:not(.lm-on) i{background:linear-gradient(180deg,#f7f8fb,#9aa1b2 18%,#ffffff 34%,#5f6473 52%,#eef1f7 70%,#a7adbb 86%,#fbfcff) center/10px 100% no-repeat}
 .ev{position:relative;display:grid;grid-template-columns:52px 44px minmax(0,1fr);align-items:start;width:100%;padding:12px 0;text-align:left;border-radius:16px}
 .ev .lg{width:52px;height:52px;border-radius:13px;overflow:hidden;background:var(--chip)}
 .ev .lg img,.ev .lg canvas{display:block;width:100%;height:100%;object-fit:cover}
-.ev .node{justify-self:center;margin-top:19px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #e2e2df;transition:background .4s,box-shadow .4s;position:relative;z-index:1}
+.ev .node{justify-self:center;margin-top:19px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #e2e2df;transition:background .4s,box-shadow .4s;position:relative;z-index:1}
 .ev.on .node{background:radial-gradient(circle at 34% 28%,#fff 0 12%,rgba(255,255,255,0) 30%),radial-gradient(circle at 50% 50%,#e9eaf0 0,#b8bcc8 40%,#5c6070 70%,#1d1f27 86%,#a9adbb 100%);box-shadow:inset 0 -1px 2px rgba(0,0,0,.25)}
 .ev .tx{display:block;min-width:0}
 .ev .d{display:block;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
@@ -172,7 +195,7 @@ h1 span{display:block;color:var(--mute)}
 .ev .more{display:inline-block;margin-top:6px;font-size:13px;color:var(--ink);opacity:0;transition:opacity .2s}
 .ev:hover .more,.ev:focus-visible .more{opacity:1}
 @media (hover:none){.ev .more{opacity:1}}
-@media (max-width:480px){.ev{grid-template-columns:44px 34px minmax(0,1fr)}.ev .lg{width:44px;height:44px;border-radius:11px}.tl .rail{left:61px}.ev .node{margin-top:15px}}
+@media (max-width:480px){.ev{grid-template-columns:44px 34px minmax(0,1fr)}.ev .lg{width:44px;height:44px;border-radius:11px}.tl .rail{left:61px}.ev .node{margin-top:14px}}
 
 /* ---------- compétences ---------- */
 .skills{padding-block:96px 20px}
@@ -249,8 +272,8 @@ footer button:hover{color:var(--ink)}
   <div class="win" id="win">
     <div class="lm" id="lmWin" aria-hidden="true"></div>
     <div class="fb" aria-hidden="true"></div>
+    <div class="screen"><div class="term" id="term"><pre id="tt" aria-live="polite"></pre></div></div>
   </div>
-  <div class="term" id="term"><pre id="tt" aria-live="polite"></pre></div>
   <div class="go" id="go"><button class="run" id="run" type="button">run <span aria-hidden="true">⏎</span></button><span class="hint">ou appuyez sur Entrée</span></div>
   <div class="snd" role="group" aria-label="Son">
     <span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z" fill="currentColor"/><path d="M11.5 5.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Son</span>
@@ -264,15 +287,16 @@ footer button:hover{color:var(--ink)}
   <a class="pill" href="#top" aria-label="Haut de la page"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.2 8 2.8l5.5 4.4V13a.8.8 0 0 1-.8.8H9.6V10H6.4v3.8H3.3a.8.8 0 0 1-.8-.8z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></a>
   <button class="pill" id="sndBtn" type="button" aria-label="Activer le son" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z" fill="currentColor"/><path class="w" d="M11.5 5.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0"/><path class="m" d="m11 6 4 4m0-4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
   <button class="pill wide" id="menuBtn" type="button" aria-label="Ouvrir le menu" aria-expanded="false"><span class="burger" aria-hidden="true"><i></i><i></i></span></button>
-  <a class="pill" href="#contact" aria-label="Contact" style="padding:0;overflow:hidden"><span class="orb" aria-hidden="true"></span></a>
+  <button class="pill bird" id="bird" type="button" aria-label="La perruche de Sceaux" title="Une perruche de Sceaux"><span class="lm" id="lmBird" aria-hidden="true"></span><span class="orb fbB" aria-hidden="true"></span></button>
 </nav>
 
 <main id="site">
-  <section class="hero wrap" id="top">
-    <div class="mark rise" id="mark" role="img" aria-label="A.R."><div class="fbA"><span class="orb" style="width:120px;height:120px"></span></div></div>
-    <h1 class="rise" style="animation-delay:.08s">Bonjour, je suis Adonis.<span>Je sécurise les applications d'IA.</span></h1>
-    <p class="sub rise" style="animation-delay:.16s">Élève ingénieur à l'ESILV, majeure cybersécurité. Je construis des outils, j'attaque des modèles de langage pour mesurer leurs failles, et je cherche un stage de 4 à 5 mois à partir d'avril 2027.</p>
-    <div class="ctas rise" style="animation-delay:.24s"><a class="btn" href="#contact">Me contacter</a><a class="btn ghost" href="cv.pdf" target="_blank" rel="noopener">CV</a></div>
+  <section class="hero" id="top">
+    <div class="mark land" id="mark" role="img" aria-label="A.R."><div class="fbA"><span class="orb" style="width:120px;height:120px"></span></div></div>
+    <h1 class="land" style="animation-delay:.14s">Bonjour, je suis Adonis.<span>Je sécurise les applications d'IA.</span></h1>
+    <p class="sub land" style="animation-delay:.22s">Élève ingénieur à l'ESILV, majeure cybersécurité. Je cherche un stage de 4 à 5 mois à partir d'avril 2027.</p>
+    <div class="ctas land" style="animation-delay:.3s"><a class="btn" href="#contact">Me contacter</a><a class="btn ghost" href="cv.pdf" target="_blank" rel="noopener">Mon CV</a></div>
+    <div class="downw"><a class="down land" style="animation-delay:.75s" href="#perso"><span>Voir mes projets</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a></div>
   </section>
 
   <section class="row" id="perso" data-row="perso">
@@ -280,24 +304,28 @@ footer button:hover{color:var(--ink)}
     <div class="info" aria-live="polite"></div>
     <div class="stage" tabindex="0" aria-label="Projets personnels : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <a class="cue" href="#encours"><span>Ce sur quoi je travaille en ce moment</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
   <section class="row" id="encours" data-row="now">
-    <div class="label">En ce moment</div>
+    <div class="label">Ce sur quoi je travaille en ce moment</div>
     <div class="info" aria-live="polite"></div>
-    <div class="stage" tabindex="0" aria-label="Travaux en cours : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
+    <div class="stage" tabindex="0" aria-label="Ce sur quoi je travaille en ce moment : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Un outil pour choisir sa voiture, mon activité de consultant, et un projet sur le risque des agents IA.</p>
+    <a class="cue" href="#experience"><span>Mon expérience</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
   <section class="cv narrow" id="experience">
     <div class="label">Expérience</div>
     <ol class="tl" data-tl="exp"><li class="rail" aria-hidden="true"><i></i></li></ol>
+    <a class="cue" href="#formation"><span>Ma formation</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
   <section class="cv narrow" id="formation">
     <div class="label">Formation</div>
     <ol class="tl" data-tl="edu"><li class="rail" aria-hidden="true"><i></i></li></ol>
+    <a class="cue" href="#competences"><span>Mes compétences</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
   <section class="skills narrow" id="competences">
@@ -311,6 +339,7 @@ footer button:hover{color:var(--ink)}
       <div><dt>Langues</dt><dd>Anglais B2+ (TOEFL ITP 607/677), français natif (Certification Voltaire)</dd></div>
       <div><dt>En dehors</dt><dd>Basse, photo argentique, finance, Formule 1, volley, musculation</dd></div>
     </dl>
+    <a class="cue" href="#contact"><span>Me contacter</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
   <section class="contact wrap" id="contact">
@@ -370,6 +399,16 @@ const sfx = {
     o.type = 'sine'; o.frequency.setValueAtTime(fr, t); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.02); },
   ready(){ sfx.tone(740, 0.18); setTimeout(() => sfx.tone(988, 0.3), 110); },
+  // la perruche : deux pépiements quand elle est contente, un cri quand on l'agace
+  chirp(){ if (!SND.on) return; const c = ac(); if (!c) return; [0, 0.09].forEach((d, i) => { const t = c.currentTime + d, o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(2500 + i * 300, t); o.frequency.exponentialRampToValueAtTime(3600 + i * 300, t + 0.06);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.08); }); },
+  squawk(){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(820, t); o.frequency.exponentialRampToValueAtTime(420, t + 0.22);
+    f.type = 'bandpass'; f.frequency.value = 1500; f.Q.value = 1.2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
+    o.connect(f).connect(g).connect(c.destination); o.start(t); o.stop(t + 0.28); },
   tick(){ sfx.tone(1200, 0.05, 0.03); },
   dive(){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, s = noise(c, 1.8), f = c.createBiquadFilter(), g = c.createGain();
     f.type = 'lowpass'; f.Q.value = 6; f.frequency.setValueAtTime(220, t); f.frequency.exponentialRampToValueAtTime(5200, t + 1.1); f.frequency.exponentialRampToValueAtTime(400, t + 1.75);
@@ -394,12 +433,20 @@ setSound(SND.on);
 const lmReady = import('./assets/paper-shaders/paper-lm.js').catch(e => { console.warn(e); return null; });
 function sqPath(g, x, y, w, h, r){ g.beginPath(); if (g.roundRect) g.roundRect(x, y, w, h, r); else { g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); } }
 // Une forme en noir sur fond transparent devient une pièce de chrome qui coule.
+const lmCache = {};
 async function liquidMount(el, draw, W, H, opt = {}){
   const P = await lmReady; if (!P) return null;
   try {
-    const c = document.createElement('canvas'); c.width = W; c.height = H; draw(c.getContext('2d'), W, H);
-    const { pngBlob } = await P.toProcessedLiquidMetal(c.toDataURL('image/png'));
-    const img = new Image(); img.src = URL.createObjectURL(pngBlob); await img.decode();
+    let imgP = opt.key && lmCache[opt.key];
+    if (!imgP) {
+      imgP = (async () => {
+        const c = document.createElement('canvas'); c.width = W; c.height = H; draw(c.getContext('2d'), W, H);
+        const { pngBlob } = await P.toProcessedLiquidMetal(c.toDataURL('image/png'));
+        const im = new Image(); im.src = URL.createObjectURL(pngBlob); await im.decode(); return im;
+      })();
+      if (opt.key) lmCache[opt.key] = imgP;
+    }
+    const img = await imgP;
     const col = P.getShaderColorFromString;
     const m = new P.ShaderMount(el, P.liquidMetalFragmentShader, {
       u_colorBack: col('#ffffff00'), u_colorTint: col('#ffffff'), u_image: img,
@@ -449,30 +496,32 @@ function typeStep(now){
   renderTerm(false);
 }
 if (matchMedia('(hover: none)').matches) { const h = go.querySelector('.hint'); if (h) h.textContent = 'ou touchez la plaque'; }
-// la plaque : un rectangle arrondi, plein, que le shader transforme en métal ; le terminal dessous
-const WIN = { pad: 0.02, r: 0.2 };
-let slabY = 0;
+// la plaque : un grand rectangle arrondi, plein, en métal liquide ; le terminal dans un écran de verre fumé
+const WIN = { pad: 0.015, r: 0.11 };
+let slabY = 0, slabW = 0, slabH = 0;
 function drawWin(g, W, H){
   const m = Math.min(W, H), p = W * WIN.pad;
   g.fillStyle = '#000'; sqPath(g, p, p, W - 2 * p, H - 2 * p, m * WIN.r); g.fill();
 }
 function layoutWin(){
-  const mob = innerWidth < 640, asp = mob ? 1.35 : 1.5;
-  let ww = mob ? Math.min(innerWidth * 0.74, 320) : Math.min(420, innerWidth * 0.42);
-  let wh = ww / asp; const maxH = innerHeight * 0.36; if (wh > maxH) { wh = maxH; ww = wh * asp; }
-  const tf = mob ? 11.5 : 13, termH = 6 * tf * 1.75, tw = mob ? Math.min(innerWidth - 40, 300) : Math.max(ww, 330);
-  const total = wh + 30 + termH + 28 + 38, top = Math.max(20, (innerHeight - total) / 2 - 12);
-  slabY = top + wh / 2;
-  win.style.width = ww + 'px'; win.style.height = wh + 'px'; win.style.setProperty('--wr', (Math.min(ww, wh) * WIN.r) + 'px');
+  const mob = innerWidth < 640, asp = mob ? 0.86 : 1.6;
+  let ww = mob ? Math.min(innerWidth - 32, 420) : Math.min(660, innerWidth * 0.62);
+  let wh = ww / asp; const maxH = innerHeight * (mob ? 0.62 : 0.6); if (wh > maxH) { wh = maxH; ww = wh * asp; }
+  const top = Math.max(16, (innerHeight - (wh + 30 + 38)) / 2 - 8);
+  slabY = top + wh / 2; slabW = ww; slabH = wh;
+  const m = Math.min(ww, wh);
+  win.style.width = ww + 'px'; win.style.height = wh + 'px';
+  win.style.setProperty('--wr', (m * WIN.r * (1 / (1 - 2 * WIN.pad))) + 'px');
+  win.style.setProperty('--gi', Math.round(clamp(m * 0.055, 14, 24)) + 'px');
+  term.style.setProperty('--tf', (mob ? 11.5 : 13) + 'px');
   intro.style.setProperty('--wy', slabY + 'px');
-  term.style.setProperty('--tf', tf + 'px'); term.style.setProperty('--tw', tw + 'px'); term.style.setProperty('--ty', (top + wh + 30) + 'px');
-  intro.style.setProperty('--gy', (top + wh + 30 + termH + 28) + 'px');
+  intro.style.setProperty('--gy', (top + wh + 30) + 'px');
   return mob ? 'm' : 'd';
 }
 async function buildWin(){
   const key = layoutWin(); if (key === winKey) return; winKey = key;
   if (winMount) { try { winMount.dispose(); } catch (e) {} winMount = null; win.classList.remove('lm-on'); }
-  const W = 1200, H = Math.round(W / (key === 'm' ? 1.35 : 1.5));
+  const W = 1200, H = Math.round(W / (key === 'm' ? 0.86 : 1.6));
   const m = await liquidMount(document.getElementById('lmWin'), drawWin, W, H, { distortion: 0.09 });
   if (key === winKey) winMount = m; else if (m) m.dispose();
 }
@@ -480,11 +529,12 @@ function startIntro(){
   introOn = true; phase = 'type'; typed = { line: 0, ch: 0, next: performance.now() + 700 };
   intro.style.display = ''; intro.style.opacity = '1'; intro.style.transition = '';
   document.body.style.overflow = 'hidden';
-  site.classList.remove('in');
+  site.classList.remove('in'); document.body.classList.remove('landed');
   go.classList.remove('show'); term.style.opacity = '1'; winShown = 0;
-  win.style.setProperty('--ws', 0.94); win.style.setProperty('--wo', 0);
+  win.style.setProperty('--ws', 0.94); win.style.setProperty('--wo', 0); win.style.setProperty('--so', 1);
   renderTerm(false);
   buildWin();
+  if (winMount) winMount.setSpeed(reduce ? 0 : 1);
   introT0 = phaseT = performance.now();
   requestAnimationFrame(introFrame);
 }
@@ -494,9 +544,15 @@ function finishIntro(){
   intro.style.display = 'none';
   document.body.style.overflow = '';
   try { sessionStorage.setItem('intro', '1'); } catch (e) {}
-  site.classList.add('in');
-  rows.forEach(r => r.resize());
+  land();
   if (winMount) winMount.setSpeed(0);
+}
+// l'arrivée : la page se pose, la marque d'abord, puis le texte, puis la flèche
+function land(){
+  scrollTo(0, 0);
+  site.classList.add('in'); document.body.classList.add('landed');
+  rows.forEach(r => r.resize()); tlProgress(); railFit();
+  setTimeout(buildRails, 2200);
 }
 function launch(){
   if (!introOn || phase !== 'type') return;
@@ -504,37 +560,36 @@ function launch(){
   phase = 'retract'; phaseT = performance.now(); sfx.tone(520, 0.14, 0.05);
   if (winMount) winMount.setSpeed(2.2);
 }
+const easeInOut = k => { k = clamp(k, 0, 1); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
 function introFrame(now){
   if (!introOn) return;
   requestAnimationFrame(introFrame);
-  const pt = (now - phaseT) / 1000, t = (now - introT0) / 1000;
-  // l'entrée : la fenêtre se pose
+  const pt = (now - phaseT) / 1000;
+  // l'entrée : la plaque se pose
   winShown = Math.min(1, winShown + 1 / 50);
-  let ws = 0.94 + 0.06 * ease(winShown), wo = ease(winShown), termOp = 1, goOp = null, dist = 0.09, wy = slabY;
+  let ws = 0.94 + 0.06 * ease(winShown), wo = ease(winShown), so = 1, goOp = null, dist = 0.09, wy = slabY;
   if (phase === 'type') typeStep(now);
   if (phase === 'retract') {
-    // la fenêtre se rétracte, le métal ondule plus fort
-    const k = clamp(pt / 0.55, 0, 1);
-    ws = 1 - 0.16 * ease(k) + 0.025 * Math.sin(k * Math.PI);
-    termOp = 1 - ease(k * 1.7); goOp = 1 - ease(k * 2); dist = 0.09 + 0.3 * Math.sin(k * Math.PI);
+    // l'écran s'éteint, la plaque se rétracte et vient au centre ; le métal ondule plus fort
+    const k = clamp(pt / 0.6, 0, 1);
+    ws = 1 - 0.12 * ease(k) + 0.02 * Math.sin(k * Math.PI);
+    so = 1 - ease(k * 1.6); goOp = 1 - ease(k * 2); dist = 0.09 + 0.3 * Math.sin(k * Math.PI);
     wy = slabY + (innerHeight / 2 - slabY) * ease(k);
-    if (k >= 1) { phase = 'dive'; phaseT = now; sfx.dive(); }
+    if (k >= 1) { phase = 'dive'; phaseT = now; sfx.dive(); if (winMount) winMount.setSpeed(3); }
   }
   if (phase === 'dive') {
-    // puis on plonge à l'intérieur : la fenêtre grandit jusqu'à sortir de l'écran
-    const k = clamp(pt / (reduce ? 0.3 : 1.15), 0, 1);
-    ws = 0.84 + (reduce ? 0 : 16 * easeIn(k)); termOp = 0; goOp = 0; dist = 0.09 + 0.25 * (1 - k);
-    wy = innerHeight / 2; wo = 1 - smooth((k - 0.45) / 0.45);
-    if (k > 0.55) site.classList.add('in');
-    if (k >= 1) { phase = 'out'; phaseT = now; }
+    // puis on plonge : la plaque grandit jusqu'à remplir l'écran de métal, qui s'efface sur la page
+    const D = reduce ? 0.35 : 1.0, F = reduce ? 0.3 : 0.75;
+    const cover = Math.max(innerWidth / slabW, innerHeight / slabH) * 1.3;
+    const k = clamp(pt / D, 0, 1), kf = clamp((pt - D * 0.72) / F, 0, 1);
+    ws = 0.88 + (cover - 0.88) * easeInOut(k) + 0.25 * cover * ease(kf);
+    so = 0; goOp = 0; wy = innerHeight / 2; dist = 0.09 + 0.25 * (1 - k);
+    if (kf > 0 && !site.classList.contains('in')) land();
+    intro.style.opacity = String(1 - smooth(kf));
+    if (kf >= 1) { finishIntro(); return; }
   }
-  if (phase === 'out') {
-    const k = clamp(pt / 0.4, 0, 1);
-    intro.style.opacity = String(1 - k); ws = 17; termOp = 0; goOp = 0; wy = innerHeight / 2; wo = 0;
-    if (k >= 1) { finishIntro(); return; }
-  }
-  win.style.setProperty('--ws', ws.toFixed(4)); win.style.setProperty('--wo', wo.toFixed(3)); intro.style.setProperty('--wy', wy.toFixed(1) + 'px');
-  term.style.opacity = termOp;
+  win.style.setProperty('--ws', ws.toFixed(4)); win.style.setProperty('--wo', wo.toFixed(3)); win.style.setProperty('--so', so.toFixed(3));
+  intro.style.setProperty('--wy', wy.toFixed(1) + 'px');
   if (goOp !== null) go.style.opacity = goOp; else go.style.opacity = '';
   if (winMount && phase !== 'type') winMount.setUniforms({ u_distortion: dist });
 }
@@ -561,6 +616,42 @@ function drawAR(g, W, H){
   g.beginPath(); g.arc(1355, 800, 66, 0, 7); g.fill();
 }
 liquidMount(document.getElementById('mark').appendChild(Object.assign(document.createElement('div'), { className: 'lm', style: 'position:absolute;inset:0' })), drawAR, 1500, 1000, { repetition: 2.2 });
+
+/* ================= la perruche de Sceaux, en chrome ================= */
+function drawBird(g, W){
+  const k = W / 512; g.scale(k, k); g.fillStyle = '#000';
+  g.beginPath(); g.moveTo(205, 352); g.quadraticCurveTo(150, 430, 66, 482); g.quadraticCurveTo(122, 474, 252, 386); g.closePath(); g.fill();   // la queue
+  g.beginPath(); g.ellipse(252, 298, 110, 140, -0.42, 0, 7); g.fill();                                                                       // le corps
+  g.beginPath(); g.arc(318, 168, 92, 0, 7); g.fill();                                                                                        // la tête
+  g.beginPath(); g.moveTo(390, 136); g.quadraticCurveTo(464, 146, 454, 222); g.quadraticCurveTo(442, 252, 410, 240); g.quadraticCurveTo(420, 204, 386, 200); g.closePath(); g.fill(); // le bec crochu
+  g.globalCompositeOperation = 'destination-out';
+  g.beginPath(); g.arc(346, 148, 19, 0, 7); g.fill();                                                                                        // l'œil
+  g.lineCap = 'round'; g.lineWidth = 17; g.beginPath(); g.moveTo(188, 250); g.quadraticCurveTo(248, 332, 298, 410); g.stroke();            // l'aile
+  g.globalCompositeOperation = 'source-over';
+}
+const bird = document.getElementById('bird');
+let birdMount = null, birdClicks = [], birdMadT = 0, tint = 0, tintTo = 0, tintRaf = 0;
+liquidMount(document.getElementById('lmBird'), drawBird, 512, 512, { repetition: 2 }).then(m => { birdMount = m; });
+function tintStep(){
+  tint += (tintTo - tint) * 0.12; if (Math.abs(tintTo - tint) < 0.004) tint = tintTo;
+  if (birdMount) birdMount.setUniforms({ u_colorTint: [1, 1 - 0.84 * tint, 1 - 0.86 * tint, 1] });
+  tintRaf = tint !== tintTo ? requestAnimationFrame(tintStep) : 0;
+}
+function setMad(on){
+  bird.classList.toggle('mad', on); tintTo = on ? 1 : 0;
+  if (!tintRaf) tintRaf = requestAnimationFrame(tintStep);
+  bird.setAttribute('aria-label', on ? 'La perruche est énervée' : 'La perruche de Sceaux');
+}
+bird.addEventListener('click', () => {
+  // contente au premier clic ; au cinquième en deux secondes, elle vire au rouge
+  const now = performance.now(); birdClicks = birdClicks.filter(t => now - t < 2000); birdClicks.push(now);
+  if (birdClicks.length >= 5 || bird.classList.contains('mad')) {
+    setMad(true); sfx.squawk(); clearTimeout(birdMadT);
+    birdMadT = setTimeout(() => { setMad(false); birdClicks = []; }, 2200); return;
+  }
+  bird.classList.remove('hop'); void bird.offsetWidth; bird.classList.add('hop'); sfx.chirp();
+});
+bird.addEventListener('animationend', e => { if (e.animationName === 'hop') bird.classList.remove('hop'); });
 
 /* ================= les icônes : des tuiles pleines, dessinées une fois ================= */
 function tile(g, S, a, b, diag){ const gr = diag ? g.createLinearGradient(0, 0, S, S) : g.createLinearGradient(0, 0, 0, S); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, S, S); }
@@ -789,7 +880,7 @@ void main(){
     vec2 td = vec2(-rd.y, rd.x);
     float ang = atan(pn.y, pn.x);
     float wave = sin(ang * 2.0 + t * 0.7) * 0.55 + sin(ang - t * 0.45) * 0.25;
-    vec2 sp = px - rd * rim * rim * rx * 0.11 + td * wave * rim * rim * rx * 0.045;
+    vec2 sp = px - rd * rim * rim * rx * 0.13 + td * wave * rim * rim * rx * 0.05;
     vec2 dd = rd * disp * rim;
     vec3 acc = vec3(0.0), wsum = vec3(0.0);
     for (int i = 0; i < 9; i++) {
@@ -803,9 +894,10 @@ void main(){
   float ink = 1.0 - min(col.r, min(col.g, col.b));
   float on = smoothstep(0.03, 0.35, ink);
   float a2 = atan(pn.y, pn.x);
-  float ring = exp(-pow((nd - 0.972) / 0.012, 2.0)) * (0.86 + 0.14 * sin(a2 * 12.0 + t * 3.5));
-  float aura = exp(-pow((nd - 0.972) / 0.06, 2.0)) * 0.28;
-  col += ringCol * (ring * 0.95 + aura) * on;
+  // comme chez Adam Perlis : un anneau fin et vif, et une aura large qui teinte en cyan ce qui passe au bord
+  float ring = exp(-pow((nd - 0.975) / 0.014, 2.0)) * (0.82 + 0.18 * sin(a2 * 12.0 + t * 3.5));
+  float aura = exp(-pow((nd - 0.975) / 0.11, 2.0));
+  col += ringCol * (ring * 1.6 + aura * 0.62) * on;
   float a = smoothstep(1.0, 0.95, nd);
   gl_FragColor = vec4(mix(vec3(1.0), col, a), 1.0);
 }`;
@@ -818,7 +910,7 @@ function program(gl, vs, fs){
   for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(pr, i); U[info.name] = gl.getUniformLocation(pr, info.name); }
   return { pr, U };
 }
-const TILE = 512, RAD = 0.225, BOOST = 0.22, TURN = 26 * Math.PI / 180;
+const TILE = 512, RAD = 0.225, BOOST = 0.3, TURN = 28 * Math.PI / 180;
 class Row {
   constructor(sec, items){
     this.sec = sec; this.items = items; this.n = items.length;
@@ -866,9 +958,9 @@ class Row {
     const b = this.stage.getBoundingClientRect(); this.w = b.width; this.h = b.height;
     if (!this.w) return;
     const mob = this.w < 700;
-    this.cs = mob ? Math.min(this.w * 0.4, this.h * 0.5) : Math.min(this.w * 0.135, this.h * 0.44, 200);
-    this.sp = mob ? this.w * 0.43 : Math.max(this.w * 0.2, this.cs * 1.9);
-    this.sp2 = this.sp;
+    this.cs = mob ? Math.min(this.w * 0.4, this.h * 0.5) : Math.min(this.w * 0.14, this.h * 0.42, 215);
+    this.sp = mob ? this.w * 0.43 : Math.max(this.w * 0.19, this.cs * 1.75);
+    this.sp2 = this.sp * 1.15;
     if (this.gl) {
       const gl = this.gl, dpr = Math.min(devicePixelRatio || 1, 1.5); this.dpr = dpr;
       const W = Math.round(this.w * dpr), H = Math.round(this.h * dpr);
@@ -930,11 +1022,6 @@ class Row {
     this.sec.querySelector('.prev').disabled = i === 0; this.sec.querySelector('.next').disabled = i === this.n - 1;
   }
   tick(dt, now){
-    // défilement automatique, comme une vitrine, tant que personne n'y touche
-    if (!reduce && this.visible && !introOn && sheet.hidden && menu.hidden && now - this.lastUser > 8000 && now - this.lastAdv > 3500) {
-      this.lastAdv = now; this.go(this.target >= this.n - 1 ? 0 : this.target + 1, true);
-    }
-    if (now - this.lastUser < 8000) this.lastAdv = now;
     // un ressort, pour que les tuiles glissent et se posent
     const k = 120, c = 2 * Math.sqrt(k) * 0.92;
     this.v += ((this.target - this.pos) * k - this.v * c) * dt; this.pos += this.v * dt;
@@ -968,8 +1055,8 @@ class Row {
     gl.uniform2f(L2.U.res, W, H); gl.uniform1f(L2.U.t, t);
     gl.uniform1f(L2.U.rx, W * 0.495); gl.uniform1f(L2.U.ry, H * 0.92);
     gl.uniform1f(L2.U.rimStart, this.w < 700 ? 0.55 : 0.6);
-    gl.uniform1f(L2.U.disp, (20 + Math.min(Math.abs(this.v) * 14, 36)) * dpr);
-    gl.uniform3f(L2.U.ringCol, 0.23, 0.42, 1.0);
+    gl.uniform1f(L2.U.disp, (26 + Math.min(Math.abs(this.v) * 14, 36)) * dpr);
+    gl.uniform3f(L2.U.ringCol, 0.0, 0.62, 1.0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 }
@@ -993,7 +1080,8 @@ MIRAGE.addEventListener('load', redrawAll);
 
 /* ================= expérience et formation : la frise ================= */
 const tls = [...document.querySelectorAll('.tl')].map(ol => {
-  const list = DATA[ol.dataset.tl];
+  // le plus récent en haut
+  const list = ol.dataset.tl === 'exp' ? [...DATA.exp].reverse() : DATA[ol.dataset.tl];
   list.forEach(it => {
     const li = document.createElement('li'), b = document.createElement('button');
     b.type = 'button'; b.className = 'ev';
@@ -1018,6 +1106,12 @@ function tlProgress(){
   });
 }
 addEventListener('scroll', tlProgress, { passive: true }); addEventListener('resize', tlProgress); tlProgress();
+// la barre : le même métal liquide que les lettres, calculé une fois, étiré à la hauteur de chaque frise
+function drawRail(g, W, H){ const w = W * 10 / 90; g.fillStyle = '#000'; g.fillRect((W - w) / 2, 2, w, H - 4); }
+function railFit(){ document.querySelectorAll('.tl .rail').forEach(li => { const sc = li.clientHeight / 360, i = li.querySelector('i'); i.style.setProperty('--s', sc.toFixed(4)); i.style.setProperty('--ry', (5 / sc).toFixed(2) + 'px'); }); }
+let railsBuilt = false;
+function buildRails(){ if (railsBuilt) return; railsBuilt = true; document.querySelectorAll('.tl .rail i').forEach(i => liquidMount(i, drawRail, 180, 720, { key: 'rail', repetition: 1.6 })); }
+addEventListener('resize', railFit); railFit();
 
 /* ================= menu et fiches ================= */
 const veil = document.getElementById('veil'), menuBtn = document.getElementById('menuBtn');
@@ -1070,7 +1164,7 @@ copyBtn.addEventListener('click', () => {
 
 /* ================= au chargement : l'intro, sauf si l'on arrive sur une section ================= */
 let seen = false; try { seen = sessionStorage.getItem('intro') === '1'; } catch (e) {}
-if (location.hash || seen) { intro.style.display = 'none'; site.classList.add('in'); }
+if (location.hash || seen) { intro.style.display = 'none'; site.classList.add('in'); document.body.classList.add('landed'); setTimeout(buildRails, 1200); }
 else startIntro();
 })();
 </script>
