@@ -317,7 +317,7 @@ footer button:hover{color:var(--ink)}
     <div class="info" aria-live="polite"></div>
     <div class="stage" tabindex="0" aria-label="Ce sur quoi je travaille en ce moment : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Un outil pour choisir sa voiture, mon activité de consultant, et un projet sur le risque des agents IA.</p>
+    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant, un projet sur le risque des agents IA, un outil pour choisir sa voiture, un jeu mobile, et une application pour découvrir de la musique.</p>
     <a class="cue" href="#experience"><span>Mon expérience</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
@@ -432,6 +432,14 @@ const sfx = {
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
     o.connect(f).connect(g).connect(c.destination); o.start(t); o.stop(t + 0.28); },
   tick(){ sfx.tone(1200, 0.05, 0.03); },
+  // le retour haptique d'Apple, en son : un petit coup sourd et net, sous le doigt
+  tap(){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime;
+    const o = c.createOscillator(), og = c.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(230, t); o.frequency.exponentialRampToValueAtTime(95, t + 0.03);
+    og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.22, t + 0.002); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+    o.connect(og).connect(c.destination); o.start(t); o.stop(t + 0.04);
+    const n = noise(c, 0.01), bp = c.createBiquadFilter(), g = c.createGain(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 1.1;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.1, t + 0.001); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.007);
+    n.connect(bp).connect(g).connect(c.destination); n.start(t); n.stop(t + 0.01); },
   // le cliquetis d'une roue de sélection d'iPhone : un « tk » très court et sec, à chaque logo qui passe le centre
   detent(v = 1){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, vol = 0.55 + 0.45 * v;
     const n = noise(c, 0.012), hp = c.createBiquadFilter(), bp = c.createBiquadFilter(), g = c.createGain();
@@ -458,6 +466,11 @@ function setSound(on){
 }
 document.querySelectorAll('[data-snd]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); setSound(b.dataset.snd === '1'); }));
 document.getElementById('sndBtn').addEventListener('click', () => setSound(!SND.on));
+// chaque clic sur un élément cliquable : un petit retour, sonore partout, et une vibration sur Android
+document.addEventListener('pointerdown', e => {
+  if (e.button > 0 || !e.target.closest('a, button, summary, .stage, [role="button"]') || e.target.closest('#bird, [data-snd]')) return;
+  sfx.tap(); if (e.pointerType === 'touch' && navigator.vibrate) navigator.vibrate(6);
+}, true);
 setSound(SND.on);
 
 /* ================= le métal liquide (Paper Shaders, licence Apache 2.0) ================= */
@@ -500,7 +513,7 @@ let winReady = false, readyAt = 0, wsLaunch = 1;
 const lines = [
   ['cmd', 'npx start portfolio'],
   ['ok', '✓ ingénieur  ESILV, sécurité de l\'IA'],
-  ['ok', '✓ projets    4 terminés, 3 en cours'],
+  ['ok', '✓ projets    4 terminés, 5 en cours'],
   ['ok', '✓ statut     stage dès avril 2027'],
   ['b', '➜ prêt       adnr140.github.io']
 ];
@@ -713,29 +726,58 @@ const ICON = {
     g.fillStyle = '#121216'; g.beginPath(); g.arc(S * 0.5, S * 0.425, S * 0.042, 0, 7); g.fill();
     g.beginPath(); g.moveTo(S * 0.485, S * 0.44); g.lineTo(S * 0.472, S * 0.535); g.lineTo(S * 0.528, S * 0.535); g.lineTo(S * 0.515, S * 0.44); g.fill();
   },
-  // paperbot : une feuille typographiée, et la ligne du scanner
+  // paperbot : un classifieur de documents ; une feuille, et derrière elle les trois dossiers où elle sera rangée
   paperbot(g, S){
-    tile(g, S, '#f1f1ef', '#f1f1ef');
-    g.strokeStyle = INK; g.lineWidth = S * 0.007; sqPath(g, S * 0.6, S * 0.2, S * 0.22, S * 0.095, S * 0.028); g.stroke();
-    g.fillStyle = INK; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.font = `500 ${S * 0.052}px ${MONO}`; g.fillText('OCR', S * 0.71, S * 0.249);
-    g.font = `500 ${S * 0.094}px ${MONO}`; g.fillText('PAPERBOT', S * 0.5, S * 0.52);
-    g.fillStyle = '#3b6cff'; g.fillRect(S * 0.16, S * 0.65, S * 0.68, S * 0.012);
+    tile(g, S, '#5d6bff', '#8b4dff', true);
+    const fold = (rot, col) => {
+      g.save(); g.translate(S * 0.5, S * 0.8); g.rotate(rot);
+      g.fillStyle = col; sqPath(g, -S * 0.2, -S * 0.5, S * 0.4, S * 0.46, S * 0.035); g.fill();
+      sqPath(g, -S * 0.2, -S * 0.535, S * 0.15, S * 0.07, S * 0.025); g.fill();
+      g.restore();
+    };
+    fold(-0.3, '#ff7a59'); fold(0.3, '#3ddc97'); fold(0, '#ffd23f');
+    // la feuille, coin corné
+    const x = S * 0.33, y = S * 0.3, w = S * 0.34, h = S * 0.42, k = S * 0.08;
+    g.fillStyle = 'rgba(40,20,120,.22)'; sqPath(g, x + S * 0.015, y + S * 0.02, w, h, S * 0.025); g.fill();
+    g.fillStyle = '#ffffff'; g.beginPath(); g.moveTo(x + S * 0.025, y); g.lineTo(x + w - k, y); g.lineTo(x + w, y + k); g.lineTo(x + w, y + h - S * 0.025);
+    g.quadraticCurveTo(x + w, y + h, x + w - S * 0.025, y + h); g.lineTo(x + S * 0.025, y + h); g.quadraticCurveTo(x, y + h, x, y + h - S * 0.025); g.lineTo(x, y + S * 0.025); g.quadraticCurveTo(x, y, x + S * 0.025, y); g.fill();
+    g.fillStyle = '#dfe2ff'; g.beginPath(); g.moveTo(x + w - k, y); g.lineTo(x + w - k, y + k); g.lineTo(x + w, y + k); g.closePath(); g.fill();
+    g.fillStyle = '#d6d9f2';
+    [0.62, 0.8, 0.7, 0.5].forEach((f, i) => { sqPath(g, x + S * 0.045, y + S * (0.1 + i * 0.055), (w - S * 0.09) * f, S * 0.022, S * 0.011); g.fill(); });
+    // l'étiquette : la classe trouvée
+    g.fillStyle = '#3ddc97'; sqPath(g, x + S * 0.045, y + h - S * 0.11, S * 0.15, S * 0.06, S * 0.03); g.fill();
+    g.strokeStyle = '#ffffff'; g.lineWidth = S * 0.012; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(x + S * 0.09, y + h - S * 0.08); g.lineTo(x + S * 0.108, y + h - S * 0.064); g.lineTo(x + S * 0.15, y + h - S * 0.098); g.stroke();
   },
-  // liv in paris : la nuit, la Seine, et le trajet le plus court
+  // liv in paris : un plan coloré, la Seine, et le plus court chemin trouvé par Dijkstra
   liv(g, S){
-    tile(g, S, '#18203f', '#090c1a');
-    g.strokeStyle = 'rgba(255,255,255,.06)'; g.lineWidth = S * 0.004;
-    for (let i = 1; i < 8; i++) { g.beginPath(); g.moveTo(i * S / 8, 0); g.lineTo(i * S / 8, S); g.stroke(); g.beginPath(); g.moveTo(0, i * S / 8); g.lineTo(S, i * S / 8); g.stroke(); }
-    g.lineCap = 'round'; g.lineJoin = 'round';
-    g.beginPath(); g.moveTo(-S * 0.05, S * 0.64); g.bezierCurveTo(S * 0.3, S * 0.42, S * 0.52, S * 0.84, S * 1.05, S * 0.5);
-    g.strokeStyle = 'rgba(80,115,255,.55)'; g.lineWidth = S * 0.06; g.stroke();
-    g.save();
-    g.beginPath(); [[0.24, 0.28], [0.37, 0.4], [0.53, 0.37], [0.63, 0.55], [0.77, 0.66]].forEach(([x, y], i) => i ? g.lineTo(x * S, y * S) : g.moveTo(x * S, y * S));
-    g.strokeStyle = '#ffd9bd'; g.lineWidth = S * 0.02; g.stroke(); g.restore();
-    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(S * 0.24, S * 0.28, S * 0.032, 0, 7); g.fill();
-    g.fillStyle = '#ff8a5b'; g.beginPath(); g.arc(S * 0.77, S * 0.66, S * 0.05, 0, 7); g.fill();
-    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(S * 0.77, S * 0.66, S * 0.02, 0, 7); g.fill();
+    tile(g, S, '#f4f1ea', '#f4f1ea');
+    g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+    // les quartiers
+    g.fillStyle = '#4fd27f'; g.beginPath(); g.moveTo(0, 0); g.lineTo(S * 0.5, 0); g.lineTo(S * 0.22, S * 0.42); g.lineTo(0, S * 0.42); g.closePath(); g.fill();
+    g.fillStyle = '#ff86b8'; g.beginPath(); g.moveTo(0, S * 0.66); g.lineTo(S * 0.3, S * 0.66); g.lineTo(S * 0.42, S); g.lineTo(0, S); g.closePath(); g.fill();
+    g.fillStyle = '#ffd43b'; g.beginPath(); g.moveTo(S * 0.64, S * 0.7); g.lineTo(S, S * 0.62); g.lineTo(S, S); g.lineTo(S * 0.58, S); g.closePath(); g.fill();
+    g.fillStyle = '#9be7b8'; g.beginPath(); g.arc(S * 0.84, S * 0.16, S * 0.2, 0, 7); g.fill();
+    // la Seine
+    g.strokeStyle = '#74c7ff'; g.lineWidth = S * 0.085;
+    g.beginPath(); g.moveTo(-S * 0.05, S * 0.56); g.bezierCurveTo(S * 0.3, S * 0.4, S * 0.55, S * 0.72, S * 1.05, S * 0.5); g.stroke();
+    // les rues
+    g.strokeStyle = '#ffffff'; g.lineWidth = S * 0.05;
+    g.beginPath(); g.moveTo(S * 0.36, -S * 0.05); g.lineTo(S * 0.5, S * 1.05); g.stroke();
+    g.beginPath(); g.moveTo(-S * 0.05, S * 0.86); g.lineTo(S * 1.05, S * 0.28); g.stroke();
+    g.beginPath(); g.moveTo(S * 0.62, -S * 0.05); g.lineTo(S * 0.75, S * 1.05); g.stroke();
+    // le trajet, et ses nœuds
+    const pts = [[0.2, 0.2], [0.4, 0.25], [0.44, 0.63], [0.72, 0.47], [0.76, 0.8]];
+    g.strokeStyle = '#1f6bff'; g.lineWidth = S * 0.045;
+    g.beginPath(); pts.forEach(([a, b], i) => i ? g.lineTo(a * S, b * S) : g.moveTo(a * S, b * S)); g.stroke();
+    pts.slice(1, -1).forEach(([a, b]) => { g.fillStyle = '#ffffff'; g.beginPath(); g.arc(a * S, b * S, S * 0.022, 0, 7); g.fill(); });
+    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(S * 0.2, S * 0.2, S * 0.045, 0, 7); g.fill();
+    g.fillStyle = '#1f6bff'; g.beginPath(); g.arc(S * 0.2, S * 0.2, S * 0.025, 0, 7); g.fill();
+    // l'arrivée : une épingle
+    const px = S * 0.76, py = S * 0.8;
+    g.fillStyle = '#ff4d3d'; g.beginPath(); g.arc(px, py - S * 0.11, S * 0.07, Math.PI * 0.85, Math.PI * 2.15); g.lineTo(px, py); g.closePath(); g.fill();
+    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(px, py - S * 0.11, S * 0.028, 0, 7); g.fill();
+    g.restore();
   },
   // l'hexapode : un hexagone sombre, et ses contours décalés en couleur
   hexa(g, S){
@@ -776,6 +818,42 @@ const ICON = {
       g.closePath(); g.fill();
     }
     g.beginPath(); g.arc(c, c, S * 0.03, 0, 2 * P); g.fill();
+  },
+  // topple : une rangée de dominos qui tombent, le dernier en or
+  topple(g, S){
+    const gr = g.createLinearGradient(0, 0, S, S); gr.addColorStop(0, '#ffbf4d'); gr.addColorStop(1, '#f0602b'); g.fillStyle = gr; g.fillRect(0, 0, S, S);
+    g.fillStyle = 'rgba(150,40,0,.16)'; g.fillRect(0, S * 0.74, S, S * 0.26);
+    const w = S * 0.105, h = S * 0.33, base = S * 0.74;
+    [[0.12, 0, '#fff4e2'], [0.29, 0.14, '#fff4e2'], [0.455, 0.42, '#fff4e2'], [0.6, 0.78, '#ffd84a']].forEach(([x, a, col], i) => {
+      g.save(); g.translate(S * x + w, base); g.rotate(a);
+      g.fillStyle = 'rgba(120,30,0,.22)'; sqPath(g, -w + S * 0.025, -h + S * 0.015, w, h, S * 0.025); g.fill();
+      g.fillStyle = col; sqPath(g, -w, -h, w, h, S * 0.025); g.fill();
+      g.fillStyle = i === 3 ? '#e8a915' : '#ecd6b6'; g.fillRect(-w + S * 0.018, -h / 2 - S * 0.005, w - S * 0.036, S * 0.01);
+      g.strokeStyle = i === 3 ? '#b57800' : '#3a8de0'; g.lineWidth = S * 0.016; g.lineCap = 'round'; g.lineJoin = 'round';
+      g.beginPath(); g.moveTo(-w * 0.72, -h * 0.7); g.lineTo(-w * 0.5, -h * 0.78); g.lineTo(-w * 0.28, -h * 0.7); g.stroke();
+      g.restore();
+    });
+  },
+  // le projet musical : un vinyle en chrome, et dessus le graphe des artistes découverts
+  crate(g, S){
+    tile(g, S, '#0d0c16', '#1a1030', true);
+    const c = S / 2, R = S * 0.36;
+    if (g.createConicGradient) {
+      const cg = g.createConicGradient(0.5, c, c); ['#2a2b35', '#9aa1b2', '#f4f6fb', '#3a3d4a', '#c3c9d6', '#22242e', '#e2e6ef', '#555a6a', '#2a2b35'].forEach((col, i, a) => cg.addColorStop(i / (a.length - 1), col)); g.fillStyle = cg;
+    } else g.fillStyle = '#8a8f9c';
+    g.beginPath(); g.arc(c, c, R, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(10,10,20,.22)'; g.lineWidth = S * 0.004;
+    for (let r = S * 0.15; r < R; r += S * 0.022) { g.beginPath(); g.arc(c, c, r, 0, 7); g.stroke(); }
+    if (g.createConicGradient) { const ir = g.createConicGradient(1.2, c, c); ['#ff5fa2', '#ffd36e', '#5ff0d0', '#7f9bff', '#c47bff', '#ff5fa2'].forEach((col, i) => ir.addColorStop(i / 5, col)); g.save(); g.globalAlpha = 0.32; g.globalCompositeOperation = 'soft-light'; g.fillStyle = ir; g.beginPath(); g.arc(c, c, R, 0, 7); g.fill(); g.restore(); }
+    const lab = g.createLinearGradient(c - S * 0.1, c - S * 0.1, c + S * 0.1, c + S * 0.1); lab.addColorStop(0, '#ff3d81'); lab.addColorStop(1, '#7b3dff');
+    // le graphe : des artistes reliés au centre et entre eux
+    const nodes = [[0.27, 0.3, '#b6ff5c', 0.03], [0.73, 0.25, '#4fe3ff', 0.026], [0.79, 0.64, '#ffb03b', 0.034], [0.32, 0.76, '#ff6fb1', 0.024], [0.6, 0.86, '#c9a8ff', 0.02]];
+    g.strokeStyle = 'rgba(255,255,255,.88)'; g.lineWidth = S * 0.009;
+    nodes.forEach(([x, y]) => { g.beginPath(); g.moveTo(c, c); g.lineTo(x * S, y * S); g.stroke(); });
+    [[0, 1], [2, 4], [3, 4]].forEach(([a, b]) => { g.beginPath(); g.moveTo(nodes[a][0] * S, nodes[a][1] * S); g.lineTo(nodes[b][0] * S, nodes[b][1] * S); g.stroke(); });
+    g.fillStyle = lab; g.beginPath(); g.arc(c, c, S * 0.1, 0, 7); g.fill();
+    g.fillStyle = '#0d0c16'; g.beginPath(); g.arc(c, c, S * 0.014, 0, 7); g.fill();
+    nodes.forEach(([x, y, col, r]) => { g.fillStyle = '#ffffff'; g.beginPath(); g.arc(x * S, y * S, S * (r + 0.011), 0, 7); g.fill(); g.fillStyle = col; g.beginPath(); g.arc(x * S, y * S, S * r, 0, 7); g.fill(); });
   },
   // mirage : le logo
   mirage(g, S){
@@ -830,16 +908,6 @@ const DATA = {
       body: `<p class="lead">La conception 3D d'un robot à six pattes, sous SolidWorks.</p><p>Mon premier projet d'ingénieur, en première année à l'ESILV (PIX 1).</p>` }
   ],
   now: [
-    { icon: 'voiture', name: 'Voiture Idéale', tag: ['En construction', 'build'], desc: 'Trouver sa prochaine voiture en 10 questions, parmi les 328 modèles vendus neufs en France.', meta: 'Web · prototype en ligne',
-      body: `<p class="lead">Choisir sa voiture sans se tromper : dix questions simples, et tout le marché comparé.</p>
-<p>On part de votre vie, pas de la fiche technique : budget, passagers, trajets. L'outil passe ensuite les 328 modèles vendus neufs en France au même crible (consommation, places, gabarit, remorquage) et explique pourquoi une voiture vous va, ce qu'il faut surveiller, et pourquoi les autres ont été écartées.</p>
-<h4>Des données publiques, vérifiables</h4><ul>
-<li class="plain"><span>Agence européenne pour l'environnement : consommation, CO2, autonomie et puissance des voitures neuves immatriculées en France depuis 2010.</span></li>
-<li class="plain"><span>RDW, le registre néerlandais des véhicules : places, dimensions et poids tractable.</span></li>
-<li class="plain"><span>ADEME, et les prix catalogue des constructeurs, relevés un par un.</span></li></ul>
-<a class="shot" href="https://voiture-ideale.adonis-ravier.workers.dev/" target="_blank" rel="noopener"><img src="assets/voiture-ideale.jpg" alt="La page d'accueil de Voiture Idéale : « Trouvez votre prochaine citadine électrique », un curseur de budget et des voitures en vignettes." loading="lazy" width="1400" height="716"></a>
-<div class="links">${L('https://voiture-ideale.adonis-ravier.workers.dev/', 'Ouvrir le site ↗')}</div>
-<p class="note">Les réponses restent sur l'appareil, et aucun constructeur ne paie pour apparaître. En construction : les données sont encore celles d'un prototype.</p>` },
     { icon: 'mirage', name: 'Mirage', tag: ['En cours', 'build'], desc: 'Mon activité de consultant : livrer plus vite, sans élargir la surface d\'attaque.', meta: 'Depuis sept. 2026 · micro-entreprise',
       body: `<p class="lead">Livrer plus vite, sans élargir la surface d'attaque.</p>
 <p>Mon activité de consultant : le développement web, la sécurité applicative et l'IA en production, tenus par une seule personne. L'état de départ est mesuré et l'écart d'arrivée documenté, pour pouvoir le prouver à ses clients, ses auditeurs et ses investisseurs.</p>
@@ -850,7 +918,35 @@ const DATA = {
 <li class="plain"><span>Mise en sécurité : audit OWASP, tests d'intrusion, correctifs.</span></li>
 <li class="plain"><span>Intégration d'IA : assistants, agents, recherche dans les documents.</span></li></ul>` },
     { icon: 'agents', name: 'Assurer les agents IA', tag: ['En cours', 'build'], desc: 'Tarifer le risque d\'un agent IA à partir d\'attaques mesurées.', meta: 'Depuis sept. 2026 · M1 · équipe de 3',
-      body: `<p class="lead">Tarifer le risque d'un agent IA à partir d'attaques réellement mesurées.</p><p>Mon projet de M1, en équipe de trois, depuis septembre 2026.</p>` }
+      body: `<p class="lead">Tarifer le risque d'un agent IA à partir d'attaques réellement mesurées.</p><p>Mon projet de M1, en équipe de trois, depuis septembre 2026.</p>` },
+    { icon: 'voiture', name: 'Voiture Idéale', tag: ['En construction', 'build'], desc: 'Trouver sa prochaine voiture en 10 questions, parmi les 328 modèles vendus neufs en France.', meta: 'Web · prototype en ligne',
+      body: `<p class="lead">Choisir sa voiture sans se tromper : dix questions simples, et tout le marché comparé.</p>
+<p>On part de votre vie, pas de la fiche technique : budget, passagers, trajets. L'outil passe ensuite les 328 modèles vendus neufs en France au même crible (consommation, places, gabarit, remorquage) et explique pourquoi une voiture vous va, ce qu'il faut surveiller, et pourquoi les autres ont été écartées.</p>
+<h4>Des données publiques, vérifiables</h4><ul>
+<li class="plain"><span>Agence européenne pour l'environnement : consommation, CO2, autonomie et puissance des voitures neuves immatriculées en France depuis 2010.</span></li>
+<li class="plain"><span>RDW, le registre néerlandais des véhicules : places, dimensions et poids tractable.</span></li>
+<li class="plain"><span>ADEME, et les prix catalogue des constructeurs, relevés un par un.</span></li></ul>
+<a class="shot" href="https://voiture-ideale.adonis-ravier.workers.dev/" target="_blank" rel="noopener"><img src="assets/voiture-ideale.jpg" alt="La page d'accueil de Voiture Idéale : « Trouvez votre prochaine citadine électrique », un curseur de budget et des voitures en vignettes." loading="lazy" width="1400" height="716"></a>
+<div class="links">${L('https://voiture-ideale.adonis-ravier.workers.dev/', 'Ouvrir le site ↗')}</div>
+<p class="note">Les réponses restent sur l'appareil, et aucun constructeur ne paie pour apparaître. En construction : les données sont encore celles d'un prototype.</p>` },
+    { icon: 'topple', name: 'Topple', tag: ['En développement', 'build'], desc: 'Un jeu mobile : poser des dominos, relier les flèches, puis tout faire tomber d\'une seule touche, pour la plus longue chaîne.', meta: 'Jeu mobile · développement précoce',
+      body: `<p class="lead">Pose des dominos, relie les flèches, puis fais tout tomber d'une seule touche. Le but : la plus longue chaîne.</p>
+<p>Comme dans Block Blast, on reçoit trois pièces choisies pour bien s'emboîter dans le plateau, et on les attrape au doigt. Rien ne disparaît tout seul : c'est le joueur qui décide quand pousser. Les dominos dorés divisent la chaîne en trois, les dominos arc-en-ciel doublent les points de toute la chaîne qui les renverse. Une partie dure 5 à 8 minutes, et se perd souvent de justesse.</p>
+<h4>Six thèmes à débloquer pendant la partie</h4><ul>
+<li><b>Départ</b><span>Feutre</span></li><li><b>2 500</b><span>Bois</span></li><li><b>7 000</b><span>Marbre</span></li><li><b>15 000</b><span>Néon</span></li><li><b>30 000</b><span>Glace</span></li><li><b>60 000</b><span>Or</span></li></ul>
+<h4>Ce qui a changé après les premiers tests</h4><ul>
+<li class="plain"><span>Une vraie fin : trois touches au maximum, puis des pierres qui tombent sur le plateau. En simulation, une touche de plus aurait sauvé la partie dans 38 défaites sur 40.</span></li>
+<li class="plain"><span>Savoir où pousser : un anneau marque le premier domino des chaînes de 5 ou plus ; une première touche allume la chaîne et ses points, la seconde la fait tomber.</span></li></ul>
+<p class="note">Développement précoce : la mécanique tient, le visuel n'est pas encore à la hauteur.</p>` },
+    { icon: 'crate', name: 'Crate', tag: ['En conception', 'build'], desc: 'Un site et une application de digging musical : un graphe de ce qu\'on découvre, une carte du monde à explorer, et ses statistiques d\'écoute.', meta: 'Web et mobile · nom provisoire, pas encore de prototype',
+      body: `<p class="lead">Découvrir de la musique comme on explore une carte : de lien en lien, sans jamais s'arrêter.</p>
+<p>On connecte Apple Music, Spotify ou d'autres services, et ses écoutes deviennent un graphe : chaque artiste est un nœud, relié aux artistes proches. En suivant les liens, on tombe sur des artistes qu'on n'aurait jamais trouvés seul.</p>
+<h4>Les idées de départ</h4><ul>
+<li class="plain"><span>Le graphe de ce qu'on a découvert, qui grandit à chaque écoute.</span></li>
+<li class="plain"><span>Une carte de la Terre : on clique sur un endroit et on tombe sur une musique de là-bas.</span></li>
+<li class="plain"><span>Une part de jeu et des statistiques d'écoute, pour donner envie de creuser toujours un peu plus.</span></li></ul>
+<h4>Une question encore ouverte</h4><p>Les gros nœuds du graphe doivent-ils être les artistes que j'écoute le plus, ou les artistes les plus connus ?</p>
+<p class="note">Le parti pris : une interface sobre et minimaliste, de très belles couleurs, et des effets comme le métal liquide de ce site.</p>` },
   ],
   exp: [
     { logo: 'assets/logos/leorunning.png', name: 'LeoRunning Club', role: 'Responsable communication, antenne nantaise', meta: 'Mai 2024 – mai 2025 · Nantes',
@@ -1205,7 +1301,7 @@ menuBtn.addEventListener('click', () => {
   const links = [...menu.querySelectorAll('ol a')]; let cur = links[0];
   links.forEach(a => { const t = document.querySelector(a.getAttribute('href')); if (t && t.getBoundingClientRect().top < innerHeight * 0.4) cur = a; a.classList.remove('cur'); });
   cur.classList.add('cur');
-  sfx.tick(); openSheet(menu);
+  openSheet(menu);
   requestAnimationFrame(() => requestAnimationFrame(() => birdFly(true)));
 });
 // la perruche quitte la barre et vient se poser à côté de « Bon. On va où ? »
@@ -1225,7 +1321,6 @@ document.getElementById('sheetX').addEventListener('click', closeSheets);
 let sheetAnim = 0;
 function openDetail(it){
   if (!it) return;
-  sfx.tone(880, 0.1, 0.05);
   const ic = sheet.querySelector('canvas.ic'), im = document.getElementById('dImg');
   if (it.logo) { im.src = it.logo; im.hidden = false; ic.hidden = true; }
   else {
@@ -1244,7 +1339,7 @@ function openDetail(it){
 /* ================= copier l'adresse ================= */
 const copyBtn = document.getElementById('copy'), mail = document.getElementById('mail');
 copyBtn.addEventListener('click', () => {
-  const ok = () => { copyBtn.textContent = 'Copiée'; sfx.tick(); setTimeout(() => copyBtn.textContent = 'Copier', 1600); };
+  const ok = () => { copyBtn.textContent = 'Copiée'; setTimeout(() => copyBtn.textContent = 'Copier', 1600); };
   const sel = () => { const r = document.createRange(); r.selectNodeContents(mail); const s = getSelection(); s.removeAllRanges(); s.addRange(r); copyBtn.textContent = 'Ctrl+C'; };
   try { navigator.clipboard.writeText(mail.textContent.trim()).then(ok, sel); } catch (e) { sel(); }
 });
