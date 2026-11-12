@@ -318,7 +318,7 @@ footer button:hover{color:var(--ink)}
     <div class="info" aria-live="polite"></div>
     <div class="stage" tabindex="0" aria-label="Ce sur quoi je travaille en ce moment : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant, un projet sur le risque des agents IA, un outil pour choisir sa voiture, un jeu mobile, et une application pour découvrir de la musique.</p>
+    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant en sécurité de l'IA, un projet sur le risque des agents IA, un outil pour choisir sa voiture, un jeu mobile, et une application pour découvrir de la musique.</p>
     <a class="cue" href="#experience"><span>Mon expérience</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
@@ -922,15 +922,16 @@ const DATA = {
       body: `<p class="lead">La conception 3D d'un robot à six pattes, sous SolidWorks.</p><p>Mon premier projet d'ingénieur, en première année à l'ESILV (PIX 1).</p>` }
   ],
   now: [
-    { icon: 'mirage', name: 'Mirage', tag: ['En cours', 'build'], desc: 'Mon activité de consultant : livrer plus vite, sans élargir la surface d\'attaque.', meta: 'Depuis sept. 2026 · micro-entreprise',
-      body: `<p class="lead">Livrer plus vite, sans élargir la surface d'attaque.</p>
-<p>Mon activité de consultant : le développement web, la sécurité applicative et l'IA en production, tenus par une seule personne. L'état de départ est mesuré et l'écart d'arrivée documenté, pour pouvoir le prouver à ses clients, ses auditeurs et ses investisseurs.</p>
-<h4>Les services</h4><ul>
-<li class="plain"><span>Audit et mise en conformité : RGPD, AI Act, NIS 2.</span></li>
-<li class="plain"><span>Mise en souveraineté numérique : dépendances cartographiées, données en France ou en Europe.</span></li>
-<li class="plain"><span>Développement logiciel : web, logiciel métier, refonte.</span></li>
-<li class="plain"><span>Mise en sécurité : audit OWASP, tests d'intrusion, correctifs.</span></li>
-<li class="plain"><span>Intégration d'IA : assistants, agents, recherche dans les documents.</span></li></ul>` },
+    { icon: 'mirage', name: 'Mirage', tag: ['En cours', 'build'], desc: 'Mon activité de consultant en sécurité de l\'IA : trouver la faille des RAG et des agents IA avant l\'attaquant.', meta: 'Depuis sept. 2026 · micro-entreprise',
+      body: `<p class="lead">Trouvez la faille avant l'attaquant.</p>
+<p>Mon activité de consultant : l'audit de sécurité des RAG et des agents IA. Le client sait où ils cèdent, et quoi corriger. L'état de départ est mesuré et l'écart d'arrivée documenté, pour pouvoir le prouver à ses clients, ses auditeurs et ses investisseurs.</p>
+<div class="shot"><img src="assets/mirage-site.jpg" alt="Le site de Mirage : « Trouvez la faille avant l'attaquant. », et les trois audits avec leurs prix." loading="lazy" width="1400" height="789"></div>
+<h4>Trois audits, prix affichés (hors taxes, à partir de)</h4><ul>
+<li><b>1 200 €</b><span>Diagnostic flash, en 48 heures : vous savez où votre assistant cède.</span></li>
+<li><b>3 800 €</b><span>Audit et sécurisation RAG, en 4 à 6 jours : plus aucun client ne lit les documents d'un autre.</span></li>
+<li><b>3 800 €</b><span>Audit et sécurisation des agents IA, en 4 à 6 jours : votre agent ne fait que ce que vous avez prévu.</span></li>
+<li><b>600 €</b><span>Tests en continu, par mois : une faille fermée le reste, mise à jour après mise à jour.</span></li></ul>
+<p class="note">Un appel de cadrage de 20 minutes, gratuit, et une proposition chiffrée sous 72 heures.</p>` },
     { icon: 'agents', name: 'Assurer les agents IA', tag: ['En cours', 'build'], desc: 'Tarifer le risque d\'un agent IA à partir d\'attaques mesurées.', meta: 'Depuis sept. 2026 · M1 · équipe de 3',
       body: `<p class="lead">Tarifer le risque d'un agent IA à partir d'attaques réellement mesurées.</p><p>Mon projet de M1, en équipe de trois, depuis septembre 2026.</p>` },
     { icon: 'voiture', name: 'Voiture Idéale', tag: ['En construction', 'build'], desc: 'Trouver sa prochaine voiture en 10 questions, parmi les 328 modèles vendus neufs en France.', meta: 'Web · prototype en ligne',
