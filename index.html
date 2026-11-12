@@ -746,17 +746,36 @@ const ICON = {
     g.fillStyle = '#ff8a2a'; hexPath(g, cx, cy, r * 0.32, Math.PI / 6); g.fill();
   },
   // voiture idéale : la roue soleil
-  voiture(g, S){
+  // voiture idéale : la roue soleil ; la jante tourne vers la droite, les picots, plus lentement, vers la gauche
+  voiture(g, S, t = 0){
     tile(g, S, '#f1f1ef', '#f1f1ef');
-    const c = S / 2; g.fillStyle = INK; g.strokeStyle = INK; g.lineCap = 'round';
-    g.lineWidth = S * 0.036;
-    for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6 + Math.PI / 12, r0 = S * 0.335, r1 = S * 0.395; g.beginPath(); g.moveTo(c + Math.cos(a) * r0, c + Math.sin(a) * r0); g.lineTo(c + Math.cos(a) * r1, c + Math.sin(a) * r1); g.stroke(); }
-    g.beginPath(); g.arc(c, c, S * 0.245, 0, 7); g.lineWidth = S * 0.075; g.stroke();
-    g.beginPath(); g.arc(c, c, S * 0.17, 0, 7); g.fill();
-    g.fillStyle = '#f1f1ef';
-    for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + Math.PI / 5 + i * 2 * Math.PI / 5; g.beginPath(); g.arc(c + Math.cos(a) * S * 0.102, c + Math.sin(a) * S * 0.102, S * 0.04, 0, 7); g.fill(); }
-    g.beginPath(); g.arc(c, c, S * 0.03, 0, 7); g.fill();
-    g.fillStyle = INK; g.beginPath(); g.arc(c, c, S * 0.016, 0, 7); g.fill();
+    const c = S / 2, BG = '#f1f1ef', P = Math.PI;
+    g.fillStyle = INK;
+    // les douze picots : des dents de scie, en rotation lente vers la gauche
+    const sa = -t * 0.32;
+    for (let i = 0; i < 12; i++) {
+      const a = sa + i * P / 6, r0 = S * 0.318, r1 = S * 0.392, w = 0.15;
+      g.beginPath();
+      g.moveTo(c + Math.cos(a - w) * r0, c + Math.sin(a - w) * r0);
+      g.lineTo(c + Math.cos(a + w * 0.9) * r0, c + Math.sin(a + w * 0.9) * r0);
+      g.lineTo(c + Math.cos(a + w * 0.55) * r1, c + Math.sin(a + w * 0.55) * r1);
+      g.closePath(); g.fill();
+    }
+    // le pneu
+    g.beginPath(); g.arc(c, c, S * 0.25, 0, 2 * P); g.arc(c, c, S * 0.183, 0, 2 * P, true); g.fill();
+    // la jante, en rotation vers la droite
+    const ra = t * 0.9;
+    g.beginPath(); g.arc(c, c, S * 0.145, 0, 2 * P); g.fill();
+    g.fillStyle = BG;
+    for (let i = 0; i < 5; i++) {
+      const a = ra - P / 2 + P / 5 + i * 2 * P / 5, ri = S * 0.042, ro = S * 0.118;
+      g.beginPath();
+      g.arc(c, c, ro, a - 0.4, a + 0.4);
+      g.lineTo(c + Math.cos(a + 0.24) * ri, c + Math.sin(a + 0.24) * ri);
+      g.lineTo(c + Math.cos(a - 0.24) * ri, c + Math.sin(a - 0.24) * ri);
+      g.closePath(); g.fill();
+    }
+    g.beginPath(); g.arc(c, c, S * 0.03, 0, 2 * P); g.fill();
   },
   // mirage : le logo
   mirage(g, S){
@@ -922,7 +941,7 @@ void main(){
     vec2 td = vec2(-rd.y, rd.x);
     float ang = atan(pn.y, pn.x);
     float wave = sin(ang * 2.0 + t * 0.7) * 0.55 + sin(ang - t * 0.45) * 0.25;
-    vec2 sp = px - rd * rim * rim * rx * 0.13 + td * wave * rim * rim * rx * 0.05;
+    vec2 sp = px - rd * rim * rim * rx * 0.18 + td * wave * rim * rim * rx * 0.075;
     vec2 dd = rd * disp * rim;
     vec3 acc = vec3(0.0), wsum = vec3(0.0);
     for (int i = 0; i < 9; i++) {
@@ -938,8 +957,8 @@ void main(){
   float a2 = atan(pn.y, pn.x);
   // comme chez Adam Perlis : un anneau fin et vif, et une aura large qui teinte en cyan ce qui passe au bord
   float ring = exp(-pow((nd - 0.975) / 0.014, 2.0)) * (0.82 + 0.18 * sin(a2 * 12.0 + t * 3.5));
-  float aura = exp(-pow((nd - 0.975) / 0.11, 2.0));
-  col += ringCol * (ring * 1.6 + aura * 0.62) * on;
+  float aura = exp(-pow((nd - 0.97) / 0.15, 2.0));
+  col += ringCol * (ring * 2.0 + aura * 0.85) * on;
   float a = smoothstep(1.0, 0.95, nd);
   gl_FragColor = vec4(mix(vec3(1.0), col, a), 1.0);
 }`;
@@ -1083,6 +1102,10 @@ class Row {
   render(t){
     const gl = this.gl; if (!gl || !this.visible || !this.w) return;
     const dpr = this.dpr || 1, W = this.cv.width, H = this.cv.height;
+    if (!reduce && t - (this.animT || 0) > 1 / 30) {
+      this.animT = t;
+      this.items.forEach((it, i) => { if (it.icon !== 'voiture') return; const g = this.tiles[i].getContext('2d'); g.save(); ICON.voiture(g, TILE, t); g.restore(); this.upload(i); });
+    }
     // passe 1 : les tuiles, dans une texture
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo); gl.viewport(0, 0, W, H);
     gl.clearColor(1, 1, 1, 1); gl.clear(gl.COLOR_BUFFER_BIT);
@@ -1106,8 +1129,8 @@ class Row {
     gl.bindTexture(gl.TEXTURE_2D, this.sceneTex); gl.uniform1i(L2.U.scene, 0);
     gl.uniform2f(L2.U.res, W, H); gl.uniform1f(L2.U.t, t);
     gl.uniform1f(L2.U.rx, W * 0.495); gl.uniform1f(L2.U.ry, H * 0.92);
-    gl.uniform1f(L2.U.rimStart, this.w < 700 ? 0.55 : 0.6);
-    gl.uniform1f(L2.U.disp, (26 + Math.min(Math.abs(this.v) * 14, 36)) * dpr);
+    gl.uniform1f(L2.U.rimStart, this.w < 700 ? 0.48 : 0.52);
+    gl.uniform1f(L2.U.disp, (40 + Math.min(Math.abs(this.v) * 16, 44)) * dpr);
     gl.uniform3f(L2.U.ringCol, 0.0, 0.62, 1.0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
@@ -1199,12 +1222,18 @@ menu.addEventListener('scroll', () => { if (!menu.hidden) birdFly(true); }, { pa
 menu.querySelectorAll('ol a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const id = a.getAttribute('href'); lastFocus = null; closeSheets(); setTimeout(() => { const t = document.querySelector(id); if (t) t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); }, 220); }));
 veil.addEventListener('click', closeSheets);
 document.getElementById('sheetX').addEventListener('click', closeSheets);
+let sheetAnim = 0;
 function openDetail(it){
   if (!it) return;
   sfx.tone(880, 0.1, 0.05);
   const ic = sheet.querySelector('canvas.ic'), im = document.getElementById('dImg');
   if (it.logo) { im.src = it.logo; im.hidden = false; ic.hidden = true; }
-  else { const g = ic.getContext('2d'); g.clearRect(0, 0, 240, 240); g.save(); g.scale(240 / TILE, 240 / TILE); ICON[it.icon](g, TILE); g.restore(); ic.hidden = false; im.hidden = true; }
+  else {
+    const g = ic.getContext('2d'), draw = tt => { g.clearRect(0, 0, 240, 240); g.save(); g.scale(240 / TILE, 240 / TILE); ICON[it.icon](g, TILE, tt); g.restore(); };
+    draw(performance.now() / 1000); ic.hidden = false; im.hidden = true;
+    cancelAnimationFrame(sheetAnim);
+    if (it.icon === 'voiture' && !reduce) { const step = now => { if (sheet.hidden) return; draw(now / 1000); sheetAnim = requestAnimationFrame(step); }; sheetAnim = requestAnimationFrame(step); }
+  }
   const tag = document.getElementById('dTag'); tag.hidden = !it.tag;
   if (it.tag) { tag.textContent = it.tag[0]; tag.className = 'tag ' + it.tag[1]; }
   document.getElementById('dTitle').textContent = it.name; document.getElementById('dMeta').textContent = it.role ? `${it.role} · ${it.meta}` : it.meta;
