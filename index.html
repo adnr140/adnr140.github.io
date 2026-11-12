@@ -432,6 +432,15 @@ const sfx = {
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
     o.connect(f).connect(g).connect(c.destination); o.start(t); o.stop(t + 0.28); },
   tick(){ sfx.tone(1200, 0.05, 0.03); },
+  // le cliquetis d'une roue de sélection d'iPhone : un « tk » très court et sec, à chaque logo qui passe le centre
+  detent(v = 1){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, vol = 0.55 + 0.45 * v;
+    const n = noise(c, 0.012), hp = c.createBiquadFilter(), bp = c.createBiquadFilter(), g = c.createGain();
+    hp.type = 'highpass'; hp.frequency.value = 1400; bp.type = 'peaking'; bp.frequency.value = 3300; bp.Q.value = 1.4; bp.gain.value = 9;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2 * vol, t + 0.0008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.009);
+    n.connect(hp).connect(bp).connect(g).connect(c.destination); n.start(t); n.stop(t + 0.012);
+    const o = c.createOscillator(), og = c.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(1900, t); o.frequency.exponentialRampToValueAtTime(900, t + 0.012);
+    og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.05 * vol, t + 0.001); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.014);
+    o.connect(og).connect(c.destination); o.start(t); o.stop(t + 0.016); },
   dive(){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, s = noise(c, 1.8), f = c.createBiquadFilter(), g = c.createGain();
     f.type = 'lowpass'; f.Q.value = 6; f.frequency.setValueAtTime(220, t); f.frequency.exponentialRampToValueAtTime(5200, t + 1.1); f.frequency.exponentialRampToValueAtTime(400, t + 1.75);
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.9); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.75);
@@ -1015,11 +1024,11 @@ class Row {
     const turn = -s * TURN * smooth(Math.min(a, 1));
     return { d, x, size: this.cs * boost, turn };
   }
-  go(i, quiet){ const t = clamp(Math.round(i), 0, this.n - 1); if (t !== this.target && !quiet) sfx.tick(); this.target = t; }
+  go(i){ this.target = clamp(Math.round(i), 0, this.n - 1); }
   touch(){ this.lastUser = performance.now(); }
   bind(){
     const st = this.stage; let down = null;
-    st.addEventListener('pointerdown', e => { this.touch(); const now = performance.now(); down = { x: e.clientX, pos: this.pos, lastX: e.clientX, lastT: now, vx: 0, moved: false }; try { st.setPointerCapture(e.pointerId); } catch (_) {} });
+    st.addEventListener('pointerdown', e => { this.touch(); this.touchDrag = e.pointerType === 'touch'; const now = performance.now(); down = { x: e.clientX, pos: this.pos, lastX: e.clientX, lastT: now, vx: 0, moved: false }; try { st.setPointerCapture(e.pointerId); } catch (_) {} });
     st.addEventListener('pointermove', e => {
       if (!down) return; this.touch();
       const dx = e.clientX - down.x; if (Math.abs(dx) > 6) { down.moved = true; st.classList.add('drag'); }
@@ -1059,6 +1068,16 @@ class Row {
     const k = 120, c = 2 * Math.sqrt(k) * 0.92;
     this.v += ((this.target - this.pos) * k - this.v * c) * dt; this.pos += this.v * dt;
     if (Math.abs(this.target - this.pos) < 0.0005 && Math.abs(this.v) < 0.001) { this.pos = this.target; this.v = 0; }
+    // un cran à chaque logo qui passe le centre (à mi-chemin entre deux logos, dans les deux sens), pendant le glisser comme pendant l'élan
+    const det = Math.round(this.pos);
+    if (this.det === undefined) this.det = det;
+    if (det !== this.det) {
+      this.det = det;
+      if (now - (this.lastDet || 0) > 28) {
+        this.lastDet = now; sfx.detent(clamp(Math.abs(this.v) / 6, 0, 1));
+        if (this.touchDrag && navigator.vibrate) navigator.vibrate(3);
+      }
+    }
     this.setInfo(false);
   }
   render(t){
