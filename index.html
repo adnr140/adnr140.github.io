@@ -396,23 +396,26 @@ const INK = '#0e0f10';
 const SND = { on: store.get('snd') === '1', c: null };
 function ac(){ if (!SND.c) { const A = window.AudioContext || window.webkitAudioContext; if (A) SND.c = new A(); } if (SND.c && SND.c.state === 'suspended') SND.c.resume(); return SND.c; }
 function noise(c, dur){ const b = c.createBuffer(1, Math.max(1, c.sampleRate * dur | 0), c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const s = c.createBufferSource(); s.buffer = b; return s; }
-// le découpage de assets/sounds/topre.mp3 : [début, appui, début du relâchement, relâchement], en secondes
-const KEY_MAP = {"KeyA":[0,0.0885,0.0885,0.0885],"KeyS":[0.237,0.099,0.336,0.099],"KeyD":[0.495,0.091,0.586,0.091],"KeyF":[0.737,0.091,0.828,0.091],"KeyJ":[0.979,0.09,1.069,0.09],"KeyK":[1.219,0.084,1.303,0.084],"KeyL":[1.447,0.0855,1.5325,0.0855],"KeyE":[1.678,0.1,1.778,0.1],"KeyR":[1.938,0.095,2.033,0.095],"KeyT":[2.188,0.096,2.284,0.096],"KeyO":[2.44,0.0875,2.5275,0.0875],"KeyP":[2.675,0.1,2.775,0.1],"Space":[2.935,0.0905,3.0255,0.0905],"Enter":[3.176,0.087,3.263,0.087]};
+// le découpage de assets/sounds/oreo.mp3 : [début, appui, début du relâchement, relâchement], en secondes
+const KEY_MAP = {"KeyA":[0,0.0545,0.0545,0.0545],"KeyS":[0.169,0.06,0.229,0.06],"KeyD":[0.349,0.053,0.402,0.053],"KeyF":[0.515,0.052,0.567,0.052],"KeyJ":[0.679,0.0545,0.7335,0.0545],"KeyK":[0.848,0.058,0.906,0.058],"KeyL":[1.024,0.0565,1.0805,0.0565],"KeyE":[1.197,0.0565,1.2535,0.0565],"KeyR":[1.37,0.055,1.425,0.055],"KeyT":[1.54,0.0535,1.5935,0.0535],"KeyO":[1.707,0.0555,1.7625,0.0555],"KeyP":[1.878,0.056,1.934,0.056],"Space":[2.05,0.0715,2.1215,0.0715],"Enter":[2.253,0.058,2.311,0.058]};
 const KEY_LETTERS = Object.keys(KEY_MAP).filter(k => k.startsWith('Key'));
 let keyBuf = null, keyBufP = null;
 function loadKeys(){
   const c = ac(); if (!c || keyBufP) return keyBufP;
-  keyBufP = fetch('assets/sounds/topre.mp3').then(r => r.arrayBuffer()).then(b => new Promise((res, rej) => c.decodeAudioData(b, res, rej))).then(b => { keyBuf = b; return b; }).catch(() => null);
+  keyBufP = fetch('assets/sounds/oreo.mp3').then(r => r.arrayBuffer()).then(b => new Promise((res, rej) => c.decodeAudioData(b, res, rej))).then(b => { keyBuf = b; return b; }).catch(() => null);
   return keyBufP;
 }
 const sfx = {
-  // une vraie frappe enregistrée : un clavier Topre, tiré de Mechvibes (licence MIT, assets/sounds)
+  // une vraie frappe enregistrée : un clavier EG Oreo, le plus crémeux de Mechvibes (licence MIT, assets/sounds),
+  // un peu plus grave et adouci par un filtre, pour un son « nuageux »
   key(kind){ if (!SND.on) return; const c = ac(); if (!c) return; if (!keyBuf) { loadKeys(); return; }
     const pool = kind === 'space' ? ['Space'] : kind === 'enter' ? ['Enter'] : KEY_LETTERS;
     const [o, press, , rel] = KEY_MAP[pool[Math.random() * pool.length | 0]];
-    const src = c.createBufferSource(), g = c.createGain();
-    src.buffer = keyBuf; src.playbackRate.value = 0.96 + Math.random() * 0.08; g.gain.value = kind === 'enter' ? 0.9 : 0.7;
-    src.connect(g).connect(c.destination); src.start(0, o, press + rel + 0.05);
+    const src = c.createBufferSource(), lp = c.createBiquadFilter(), g = c.createGain();
+    src.buffer = keyBuf; src.playbackRate.value = (kind === 'letter' ? 0.9 : 0.84) + Math.random() * 0.06;
+    lp.type = 'lowpass'; lp.frequency.value = 3600; lp.Q.value = 0.4;
+    g.gain.value = kind === 'enter' ? 1 : 0.85;
+    src.connect(lp).connect(g).connect(c.destination); src.start(0, o, press + rel + 0.04);   // durée en temps du fichier, la marge reste dans le silence entre deux touches
   },
   tone(fr = 660, dur = 0.12, vol = 0.07){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, o = c.createOscillator(), g = c.createGain();
     o.type = 'sine'; o.frequency.setValueAtTime(fr, t); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
