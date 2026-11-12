@@ -396,24 +396,23 @@ const INK = '#0e0f10';
 const SND = { on: store.get('snd') === '1', c: null };
 function ac(){ if (!SND.c) { const A = window.AudioContext || window.webkitAudioContext; if (A) SND.c = new A(); } if (SND.c && SND.c.state === 'suspended') SND.c.resume(); return SND.c; }
 function noise(c, dur){ const b = c.createBuffer(1, Math.max(1, c.sampleRate * dur | 0), c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const s = c.createBufferSource(); s.buffer = b; return s; }
+// le découpage de assets/sounds/topre.mp3 : [début, appui, début du relâchement, relâchement], en secondes
+const KEY_MAP = {"KeyA":[0,0.0885,0.0885,0.0885],"KeyS":[0.237,0.099,0.336,0.099],"KeyD":[0.495,0.091,0.586,0.091],"KeyF":[0.737,0.091,0.828,0.091],"KeyJ":[0.979,0.09,1.069,0.09],"KeyK":[1.219,0.084,1.303,0.084],"KeyL":[1.447,0.0855,1.5325,0.0855],"KeyE":[1.678,0.1,1.778,0.1],"KeyR":[1.938,0.095,2.033,0.095],"KeyT":[2.188,0.096,2.284,0.096],"KeyO":[2.44,0.0875,2.5275,0.0875],"KeyP":[2.675,0.1,2.775,0.1],"Space":[2.935,0.0905,3.0255,0.0905],"Enter":[3.176,0.087,3.263,0.087]};
+const KEY_LETTERS = Object.keys(KEY_MAP).filter(k => k.startsWith('Key'));
+let keyBuf = null, keyBufP = null;
+function loadKeys(){
+  const c = ac(); if (!c || keyBufP) return keyBufP;
+  keyBufP = fetch('assets/sounds/topre.mp3').then(r => r.arrayBuffer()).then(b => new Promise((res, rej) => c.decodeAudioData(b, res, rej))).then(b => { keyBuf = b; return b; }).catch(() => null);
+  return keyBufP;
+}
 const sfx = {
-  // une touche de clavier mécanique feutré : un « thock » sourd, un petit clic, puis le relâchement
-  key(big){ if (!SND.on) return; const c = ac(); if (!c) return;
-    const hit = (t, vol, pitch) => {
-      const n = noise(c, 0.07), lp = c.createBiquadFilter(), bp = c.createBiquadFilter(), g = c.createGain();
-      lp.type = 'lowpass'; lp.frequency.value = 1100 * pitch; bp.type = 'peaking'; bp.frequency.value = 260 * pitch; bp.Q.value = 3; bp.gain.value = 12;
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32 * vol, t + 0.003); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
-      n.connect(lp).connect(bp).connect(g).connect(c.destination); n.start(t); n.stop(t + 0.07);
-      const o = c.createOscillator(), og = c.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(170 * pitch, t); o.frequency.exponentialRampToValueAtTime(110 * pitch, t + 0.04);
-      og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.14 * vol, t + 0.003); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
-      o.connect(og).connect(c.destination); o.start(t); o.stop(t + 0.05);
-      const k = noise(c, 0.01), hp = c.createBiquadFilter(), kg = c.createGain(); hp.type = 'highpass'; hp.frequency.value = 3800;
-      kg.gain.setValueAtTime(0.035 * vol, t); kg.gain.exponentialRampToValueAtTime(0.0001, t + 0.008);
-      k.connect(hp).connect(kg).connect(c.destination); k.start(t);
-    };
-    const t = c.currentTime, p = (big ? 0.72 : 1) * (0.92 + Math.random() * 0.16);
-    hit(t, big ? 1.2 : 1, p);
-    hit(t + 0.075 + Math.random() * 0.04, 0.38, p * 1.12);   // le retour de la touche
+  // une vraie frappe enregistrée : un clavier Topre, tiré de Mechvibes (licence MIT, assets/sounds)
+  key(kind){ if (!SND.on) return; const c = ac(); if (!c) return; if (!keyBuf) { loadKeys(); return; }
+    const pool = kind === 'space' ? ['Space'] : kind === 'enter' ? ['Enter'] : KEY_LETTERS;
+    const [o, press, , rel] = KEY_MAP[pool[Math.random() * pool.length | 0]];
+    const src = c.createBufferSource(), g = c.createGain();
+    src.buffer = keyBuf; src.playbackRate.value = 0.96 + Math.random() * 0.08; g.gain.value = kind === 'enter' ? 0.9 : 0.7;
+    src.connect(g).connect(c.destination); src.start(0, o, press + rel + 0.05);
   },
   tone(fr = 660, dur = 0.12, vol = 0.07){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime, o = c.createOscillator(), g = c.createGain();
     o.type = 'sine'; o.frequency.setValueAtTime(fr, t); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -443,7 +442,7 @@ function setSound(on){
   const sb = document.getElementById('sndBtn');
   sb.setAttribute('aria-pressed', String(on)); sb.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son');
   sb.querySelector('.w').setAttribute('opacity', on ? 1 : 0); sb.querySelector('.m').setAttribute('opacity', on ? 0 : 1);
-  if (on) { ac(); sfx.tick(); }
+  if (on) { ac(); loadKeys(); sfx.tick(); }
 }
 document.querySelectorAll('[data-snd]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); setSound(b.dataset.snd === '1'); }));
 document.getElementById('sndBtn').addEventListener('click', () => setSound(!SND.on));
@@ -510,8 +509,8 @@ function renderTerm(done){
 function typeStep(now){
   if (typed.line >= lines.length || now < typed.next) return;
   const [k, s] = lines[typed.line];
-  if (k === 'cmd' && typed.ch < s.length) { const chr = s[typed.ch]; typed.ch++; sfx.key(chr === ' '); typed.next = now + (chr === ' ' ? 110 : 55) + Math.random() * 75; renderTerm(false); return; }
-  if (k === 'cmd') sfx.key(true);   // la touche Entrée
+  if (k === 'cmd' && typed.ch < s.length) { const chr = s[typed.ch]; typed.ch++; sfx.key(chr === ' ' ? 'space' : 'letter'); typed.next = now + (chr === ' ' ? 110 : 55) + Math.random() * 75; renderTerm(false); return; }
+  if (k === 'cmd') sfx.key('enter');   // la touche Entrée
   typed.line++; typed.ch = 0;
   typed.next = now + (k === 'cmd' ? 480 : 190);
   if (typed.line >= lines.length) { renderTerm(true); sfx.ready(); return; }
@@ -584,7 +583,7 @@ function land(){
 function launch(){
   if (!introOn || phase !== 'type') return;
   if (typed.line < lines.length) { typed.line = lines.length; renderTerm(true); sfx.ready(); return; }
-  phase = 'retract'; phaseT = performance.now(); sfx.key(true); setTimeout(() => sfx.tone(392, 0.5, 0.05), 60);
+  phase = 'retract'; phaseT = performance.now(); sfx.key('enter'); setTimeout(() => sfx.tone(392, 0.5, 0.05), 60);
 }
 const easeInOut = k => { k = clamp(k, 0, 1); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
 function introFrame(now){
