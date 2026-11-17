@@ -15,7 +15,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23161615'/%3E%3Cpath d='M9.5 23 16 9l6.5 14M12 18h8' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap">
 <script>document.documentElement.classList.add('js');</script>
 <style>
 /* Un site blanc, une typographie système. Une intro en métal liquide, puis trois carrousels dont les bords réfractent. */
@@ -201,6 +201,33 @@ h1 span{display:block;color:var(--mute)}
 @media (max-width:480px){.ev{grid-template-columns:44px 34px minmax(0,1fr)}.ev .lg{width:44px;height:44px;border-radius:11px}.tl .rail{left:61px}}
 
 /* ---------- compétences ---------- */
+/* en dehors des cours : un récit court, un tracé, des photos */
+.life{padding-block:110px 10px}
+.life>.label{display:flex;justify-content:center}
+.life .head{text-align:center;margin-top:34px}
+.kick{margin:0;font-size:13px;color:var(--mute)}
+.life h2{margin:10px 0 0;font:inherit;font-size:clamp(28px,4vw,40px);font-weight:500;letter-spacing:-.03em;line-height:1.1}
+.life .head p{margin:16px auto 0;max-width:50ch;color:var(--ink-2)}
+.runwrap{max-width:1040px;margin:44px auto 0;padding-left:var(--gut);padding-right:var(--gutR);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px}
+.route{display:flex;flex-direction:column;padding:20px 22px 18px;border-radius:24px;background:var(--chip)}
+.route svg{display:block;width:100%;height:auto;margin:auto 0}
+.route .rt{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.route .e{fill:var(--ink)} .route .t{fill:var(--mute)}
+.route text{font:500 13px var(--sans);fill:var(--ink)} .route .tn2{font-size:11px;font-weight:400;fill:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:10px;padding-top:14px;border-top:1px solid var(--line)}
+.stats b{display:block;font-size:clamp(20px,2.4vw,28px);font-weight:500;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stats span{display:block;margin-top:2px;font-size:12.5px;line-height:1.35;color:var(--mute)}
+.route .src{margin:12px 0 0;font-size:12px;color:var(--mute)}
+.ph{position:relative;margin:0;overflow:hidden;border-radius:24px;background:var(--chip)}
+.ph img{display:block;width:100%;height:100%;object-fit:cover}
+.ph.wide{grid-column:1/-1;aspect-ratio:16/9}
+.ph.wide img{object-position:50% 72%}
+.ph figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;font-size:13px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.42))}
+.also{margin-top:40px}
+.also dd b{display:block;font-weight:500}
+.also dd{color:var(--ink-2)}
+.life .cue{margin-top:56px}
+@media (max-width:760px){.runwrap{grid-template-columns:1fr}.ph.tall{aspect-ratio:4/5}}
 .skills{padding-block:96px 20px}
 .skills .label{display:flex;justify-content:center}
 .sk{margin:28px 0 0;border-top:1px solid var(--line);font-size:14px}
@@ -353,8 +380,38 @@ footer button:hover{color:#fff}
       <div><dt>Développement</dt><dd>Python, C#, C++, SQL, Claude Code</dd></div>
       <div><dt>Données</dt><dd>Statistiques, Monte Carlo, Power BI, Excel</dd></div>
       <div><dt>Langues</dt><dd>Anglais B2+ (TOEFL ITP 607/677), français natif (Certification Voltaire)</dd></div>
-      <div><dt>En dehors</dt><dd>Basse, photo argentique, finance, Formule 1, volley, musculation</dd></div>
     </dl>
+    <a class="cue" href="#dehors"><span>En dehors des cours</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
+  </section>
+
+  <section class="life" id="dehors">
+    <div class="label">En dehors des cours</div>
+    <div class="narrow head">
+      <p class="kick">Courir</p>
+      <h2>Paris–Nantes, trois années de suite.</h2>
+      <p>Chaque printemps, le LéoRunning Club relie à pied les deux campus de l'ESILV : un peu plus de 400 km en relais, en quatre jours, par équipes de quatre ou cinq. J'en ai couru trois éditions. La dernière partait de Nantes, et l'arche d'arrivée nous attendait devant le Pôle Léonard de Vinci, à La Défense.</p>
+    </div>
+    <div class="runwrap">
+      <div class="route">
+        <svg viewBox="0 0 400 250" role="img" aria-label="Le tracé de la course, de Nantes à Paris, en passant par Angers, Le Mans et Chartres.">
+          <path d="M34.0 216.0 C38.6 213.3 49.4 204.6 61.4 199.9 C73.4 195.2 94.6 193.2 106.1 187.7 C117.5 182.2 120.9 176.5 130.1 166.9 C139.3 157.3 150.8 139.5 161.5 130.1 C172.2 120.7 186.8 116.0 194.3 110.3 C201.9 104.7 199.6 98.2 206.7 96.2 C213.9 94.2 229.1 100.7 237.3 98.4 C245.4 96.1 248.2 88.6 255.4 82.4 C262.6 76.1 272.8 67.4 280.5 61.0 C288.3 54.6 297.1 48.5 302.0 44.0 C306.9 39.5 308.4 35.7 309.7 34.0" class="rt"/><circle cx="106.1" cy="187.7" r="2.6" class="t"/><text x="113.1" y="201.7" class="tn2">Angers</text><circle cx="161.5" cy="130.1" r="2.6" class="t"/><text x="168.5" y="144.1" class="tn2">Le Mans</text><circle cx="255.4" cy="82.4" r="2.6" class="t"/><text x="262.4" y="96.4" class="tn2">Chartres</text>
+          <circle cx="34.0" cy="216.0" r="5" class="e"/><text x="34.0" y="238.0" class="tn" text-anchor="start">Nantes</text>
+          <circle cx="309.7" cy="34.0" r="5" class="e"/><text x="309.7" y="21.0" class="tn" text-anchor="end">Paris</text>
+        </svg>
+        <div class="stats"><div><b>428 km</b><span>de Nantes à Paris</span></div><div><b>39 h 06</b><span>de course, en relais</span></div><div><b>5:29</b><span>par kilomètre, en moyenne</span></div></div>
+        <p class="src">L'édition 2026, d'après Strava.</p>
+      </div>
+      <figure class="ph tall"><img src="assets/lrc-arrivee.jpg" alt="L'équipe sous l'arche « Finish », devant le Pôle Léonard de Vinci, avec les drapeaux du LéoRunning Club et de Nantes–Paris." loading="lazy" width="800" height="883"><figcaption>La ligne d'arrivée, à La Défense.</figcaption></figure>
+      <figure class="ph wide"><img src="assets/lrc-groupe.jpg" alt="Les coureurs de l'édition 2026, médailles au cou, dans le hall du Pôle Léonard de Vinci, avec les drapeaux du club." loading="lazy" width="1280" height="853"><figcaption>Les coureurs de l'édition 2026, médaille au cou.</figcaption></figure>
+    </div>
+    <div class="narrow">
+      <dl class="sk also">
+        <div><dt>2020 – 2021</dt><dd><b>Action contre la faim</b>Bénévole : des courses solidaires, pour financer l'association.</dd></div>
+        <div><dt>2024 – 2025</dt><dd><b>LéoRunning Club</b>Responsable communication de l'antenne nantaise : 25 recrues, et une communauté de plus de 150 membres.</dd></div>
+        <div><dt>2024 – 2026</dt><dd><b>Paris–Nantes</b>Trois éditions, en relais, entre les deux campus.</dd></div>
+        <div><dt>Aussi</dt><dd>La basse, apprise seul. Le volley et la musculation. Le design d'objet, l'architecture, la finance et la Formule 1.</dd></div>
+      </dl>
+    </div>
     <a class="cue" href="#contact"><span>Me contacter</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
@@ -384,7 +441,8 @@ footer button:hover{color:#fff}
       <li style="transition-delay:.16s"><a href="#experience"><small>04</small>Expérience</a></li>
       <li style="transition-delay:.2s"><a href="#formation"><small>05</small>Formation</a></li>
       <li style="transition-delay:.24s"><a href="#competences"><small>06</small>Compétences</a></li>
-      <li style="transition-delay:.28s"><a href="#contact"><small>07</small>Contact</a></li>
+      <li style="transition-delay:.28s"><a href="#dehors"><small>07</small>En dehors des cours</a></li>
+      <li style="transition-delay:.32s"><a href="#contact"><small>08</small>Contact</a></li>
     </ol>
     <div class="soc"><a href="https://www.linkedin.com/in/adonis-ravier" target="_blank" rel="noopener">LinkedIn ↗</a><a href="https://github.com/adnr140" target="_blank" rel="noopener">GitHub ↗</a><a href="https://www.root-me.org/404adnr?lang=fr" target="_blank" rel="noopener">Root Me ↗</a><a href="cv.pdf" target="_blank" rel="noopener">CV ↗</a></div>
   </div>
@@ -942,9 +1000,9 @@ const TITLE = {
 };
 function titleText(g, S, txt, y, map){
   if (!txt) return;
-  g.save(); g.font = `600 ${S * 0.074}px ${SANS}`; g.textAlign = 'center'; g.textBaseline = 'middle';
-  if ('letterSpacing' in g) g.letterSpacing = `${S * 0.012}px`;
-  const T = txt.toUpperCase();
+  g.save(); g.font = `800 ${S * 0.098}px ${SANS}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  if ('letterSpacing' in g) g.letterSpacing = `${-S * 0.002}px`;
+  const T = txt;
   if (map) { g.lineJoin = 'round'; g.strokeStyle = '#ffffff'; g.lineWidth = S * 0.03; g.strokeText(T, S / 2, y); g.fillStyle = '#1f2a37'; }
   else { g.shadowColor = 'rgba(10,10,40,.22)'; g.shadowBlur = S * 0.02; g.shadowOffsetY = S * 0.006; g.fillStyle = 'rgba(255,255,255,.97)'; }
   g.fillText(T, S / 2, y); g.restore();
