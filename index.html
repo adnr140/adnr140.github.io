@@ -316,9 +316,9 @@ footer button:hover{color:#fff}
   </section>
 
   <section class="row" id="perso" data-row="perso">
-    <div class="label">Projets personnels</div>
+    <div class="label">Projets scolaires et personnels</div>
     <div class="info" aria-live="polite"></div>
-    <div class="stage" tabindex="0" aria-label="Projets personnels : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
+    <div class="stage" tabindex="0" aria-label="Projets scolaires et personnels : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <a class="cue" href="#encours"><span>Ce sur quoi je travaille en ce moment</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
@@ -328,7 +328,7 @@ footer button:hover{color:#fff}
     <div class="info" aria-live="polite"></div>
     <div class="stage" tabindex="0" aria-label="Ce sur quoi je travaille en ce moment : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant en sécurité de l'IA, un projet sur le risque des agents IA, un outil pour choisir sa voiture, un jeu mobile, et une application pour découvrir de la musique.</p>
+    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant en sécurité de l'IA, un outil pour choisir sa voiture, un jeu mobile, et une application pour découvrir de la musique.</p>
     <a class="cue" href="#experience"><span>Mon expérience</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
@@ -379,7 +379,7 @@ footer button:hover{color:#fff}
     <div class="greet"><span class="slot" id="birdSlot" aria-hidden="true"></span><span>Bon. On va où ?</span></div>
     <ol>
       <li style="transition-delay:.04s"><a href="#top"><small>01</small>Accueil</a></li>
-      <li style="transition-delay:.08s"><a href="#perso"><small>02</small>Projets personnels</a></li>
+      <li style="transition-delay:.08s"><a href="#perso"><small>02</small>Projets scolaires et personnels</a></li>
       <li style="transition-delay:.12s"><a href="#encours"><small>03</small>Ce sur quoi je travaille</a></li>
       <li style="transition-delay:.16s"><a href="#experience"><small>04</small>Expérience</a></li>
       <li style="transition-delay:.2s"><a href="#formation"><small>05</small>Formation</a></li>
@@ -743,7 +743,15 @@ function hexPath(g, cx, cy, r, rot = 0){ g.beginPath(); for (let i = 0; i < 6; i
 const MIRAGE = new Image(); MIRAGE.src = 'assets/mirage-logo.png';
 const TOPPLE = new Image(); TOPPLE.src = 'assets/topple-board.jpg';
 // le fond d'une icône : un dégradé en diagonale, comme les icônes d'applications ; renvoyé pour « percer » le pictogramme de la même couleur
-function grad(g, S, a, b){ const gr = g.createLinearGradient(0, 0, S * 0.6, S); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, S, S); return gr; }
+// LBL : pendant qu'une icône titrée dessine son pictogramme réduit, le fond reste plein cadre et le dégradé « perçant » est recalé
+let LBL = null;
+function grad(g, S, a, b){
+  const mk = (x0, y0, x1, y1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, a); gr.addColorStop(1, b); return gr; };
+  if (!LBL) { const gr = mk(0, 0, S * 0.6, S); g.fillStyle = gr; g.fillRect(0, 0, S, S); return gr; }
+  g.save(); g.setTransform(LBL.base); g.fillStyle = mk(0, 0, S * 0.6, S); g.fillRect(0, 0, S, S); g.restore();
+  const p = LBL.inv.transformPoint(new DOMPoint(0, 0)), q = LBL.inv.transformPoint(new DOMPoint(S * 0.6, S));
+  return mk(p.x, p.y, q.x, q.y);
+}
 // une ombre portée douce sous ce que dessine fn (pas de halo : une ombre sombre, décalée vers le bas)
 function lift(g, S, fn, k = 1){ g.save(); g.shadowColor = `rgba(10,10,40,${0.22 * k})`; g.shadowBlur = S * 0.045 * k; g.shadowOffsetY = S * 0.02 * k; fn(); g.restore(); }
 const ICON = {
@@ -926,6 +934,40 @@ const ICON = {
   }
 };
 
+
+/* les titres sur les icônes des projets scolaires et personnels : un mot en haut, un en bas, le pictogramme réduit au milieu */
+const TITLE = {
+  audit: ['Audit LLM', 'Red teaming'], paperbot: ['Paper', 'Bot'], cloud: ['Cloud', 'Optimisation'], agents: ['Assurance', 'Agents IA'],
+  liv: ['Liv in', 'Paris'], hexa: ['Robot', 'Hexapode'], topple: ['Topple', '']
+};
+function titleText(g, S, txt, y, map){
+  if (!txt) return;
+  g.save(); g.font = `600 ${S * 0.074}px ${SANS}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  if ('letterSpacing' in g) g.letterSpacing = `${S * 0.012}px`;
+  const T = txt.toUpperCase();
+  if (map) { g.lineJoin = 'round'; g.strokeStyle = '#ffffff'; g.lineWidth = S * 0.03; g.strokeText(T, S / 2, y); g.fillStyle = '#1f2a37'; }
+  else { g.shadowColor = 'rgba(10,10,40,.22)'; g.shadowBlur = S * 0.02; g.shadowOffsetY = S * 0.006; g.fillStyle = 'rgba(255,255,255,.97)'; }
+  g.fillText(T, S / 2, y); g.restore();
+}
+Object.keys(TITLE).forEach(k => {
+  const raw = ICON[k], [top, bot] = TITLE[k];
+  ICON[k] = (g, S, t) => {
+    const map = k === 'liv';
+    if (map) { raw(g, S, t); }
+    else {
+      if (k === 'topple') grad(g, S, '#5a361d', '#1f1209');
+      const z = 0.7, cy = S * (bot ? 0.5 : 0.56), base = g.getTransform();
+      const M = new DOMMatrix().translate(S / 2, cy).scale(z).translate(-S / 2, -S / 2);
+      g.save(); g.setTransform(base.multiply(M)); LBL = { base, inv: M.inverse() };
+      try {
+        if (k === 'topple') { if (TOPPLE.complete && TOPPLE.naturalWidth) { sqPath(g, 0, 0, S, S, S * 0.08); g.clip(); g.drawImage(TOPPLE, 0, 0, S, S); } }
+        else raw(g, S, t);
+      } finally { LBL = null; g.restore(); }
+    }
+    titleText(g, S, top, S * 0.135, map); titleText(g, S, bot, S * 0.865, map);
+  };
+});
+
 /* ================= le contenu ================= */
 const L = (h, t) => `<a href="${h}" target="_blank" rel="noopener">${t}</a>`;
 const DATA = {
@@ -962,6 +1004,13 @@ const DATA = {
 <div class="shot"><img src="assets/cloud-burst.png" alt="La vitesse de calcul de deux VMs en continu : l'e2-medium suit l'e2-standard-2 pendant 122 secondes, puis tombe à la moitié." loading="lazy" width="1800" height="780"></div>
 <div class="links">${L('https://github.com/adnr140/cloud-optimization', 'Voir le code ↗')}</div>
 <p class="note">Projet du cours de Cloud Computing de l'ESILV, en équipe de trois.</p>` },
+    { icon: 'agents', name: 'Quantification actuarielle du risque et tarification d\'assurance des agents IA', tag: ['En cours', 'build'], desc: 'Tarifer l\'assurance d\'agents IA à partir de taux de succès d\'attaque mesurés ; je porte le volet red teaming.', meta: 'Depuis sept. 2026 · projet de Master 1 · équipe de 3',
+      body: `<p class="lead">Tarifer l'assurance d'un agent IA à partir de taux de succès d'attaque réellement mesurés.</p>
+<p>Mon projet de Master 1, en équipe de trois, qui réunit la cybersécurité, la sécurité de l'IA et l'actuariat. Je porte le volet red teaming : mesurer à quel point chaque agent cède aux attaques, pour qu'on puisse en déduire un risque, puis un prix.</p>
+<h4>Où on en est</h4><ul>
+<li class="plain"><span>Les modèles cibles sont choisis : Qwen 8B en local, un modèle souverain sur OVHcloud et deux modèles commerciaux.</span></li>
+<li class="plain"><span>Le banc d'essai AgentDojo mesure d'abord l'utilité de base de Qwen 8B sur des tâches métier, avant toute attaque.</span></li></ul>
+<p class="note">En cours depuis septembre 2026.</p>` },
     { icon: 'liv', name: 'Liv In Paris', tag: ['Terminé', 'live'], desc: 'Une application sur le modèle d\'Uber, avec Dijkstra pour le trajet le plus court.', meta: '2024 · graphes · Dijkstra',
       body: `<p class="lead">Une application qui reprend le principe d'Uber.</p><p>Paris est modélisé comme un graphe : l'algorithme de Dijkstra y calcule le trajet le plus court entre deux points. Une interface permet ensuite de passer commande.</p>` },
     { icon: 'hexa', name: 'Robot hexapode', tag: ['Terminé', 'live'], desc: 'La conception 3D d\'un robot à six pattes.', meta: '2023 · PIX 1 · SolidWorks',
@@ -978,8 +1027,6 @@ const DATA = {
 <li><b>3 800 €</b><span>Audit et sécurisation des agents IA, en 4 à 6 jours : votre agent ne fait que ce que vous avez prévu.</span></li>
 <li><b>600 €</b><span>Tests en continu, par mois : une faille fermée le reste, mise à jour après mise à jour.</span></li></ul>
 <p class="note">Un appel de cadrage de 20 minutes, gratuit, et une proposition chiffrée sous 72 heures.</p>` },
-    { icon: 'agents', name: 'Assurer les agents IA', tag: ['En cours', 'build'], desc: 'Tarifer le risque d\'un agent IA à partir d\'attaques mesurées.', meta: 'Depuis sept. 2026 · M1 · équipe de 3',
-      body: `<p class="lead">Tarifer le risque d'un agent IA à partir d'attaques réellement mesurées.</p><p>Mon projet de M1, en équipe de trois, depuis septembre 2026.</p>` },
     { icon: 'voiture', name: 'Voiture Idéale', tag: ['En construction', 'build'], desc: 'Trouver sa prochaine voiture en 10 questions, parmi les 328 modèles vendus neufs en France.', meta: 'Web · prototype en ligne',
       body: `<p class="lead">Choisir sa voiture sans se tromper : dix questions simples, et tout le marché comparé.</p>
 <p>On part de votre vie, pas de la fiche technique : budget, passagers, trajets. L'outil passe ensuite les 328 modèles vendus neufs en France au même crible (consommation, places, gabarit, remorquage) et explique pourquoi une voiture vous va, ce qu'il faut surveiller, et pourquoi les autres ont été écartées.</p>
