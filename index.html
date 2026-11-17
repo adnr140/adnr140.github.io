@@ -540,7 +540,7 @@ let winReady = false, readyAt = 0, wsLaunch = 1;
 const lines = [
   ['cmd', 'npx start portfolio'],
   ['ok', '✓ ingénieur  ESILV, sécurité de l\'IA'],
-  ['ok', '✓ projets    4 terminés, 5 en cours'],
+  ['ok', '✓ projets    5 terminés, 5 en cours'],
   ['ok', '✓ statut     stage dès avril 2027'],
   ['b', '➜ prêt       adnr140.github.io']
 ];
@@ -882,6 +882,25 @@ const ICON = {
     const tw = S * 0.12, th = tw * 0.92;
     ['#1E2478', '#3F51D9', '#808DF0', '#BAC3F8'].forEach((cl, i) => { const cx = S * (0.29 + i * 0.14), by = S * (0.64 - i * 0.07); g.beginPath(); g.moveTo(cx, by - th); g.lineTo(cx + tw / 2, by); g.lineTo(cx - tw / 2, by); g.closePath(); g.fillStyle = cl; g.fill(); });
   },
+  // l'optimisation cloud : un nuage, et dedans trois VMs dont les tâches finissent toutes à la même ligne
+  cloud(g, S){
+    const bg = grad(g, S, '#3ad6c6', '#0b6fa8');
+    lift(g, S, () => {
+      // un seul chemin, rempli une fois : une seule ombre, pas de couture entre les bosses et la base
+      g.fillStyle = '#ffffff'; g.beginPath();
+      [[0.35, 0.5, 0.135], [0.52, 0.4, 0.185], [0.69, 0.51, 0.125]].forEach(([x, y, r]) => { g.moveTo(S * (x + r), S * y); g.arc(S * x, S * y, S * r, 0, Math.PI * 2); });
+      const bx = S * 0.17, by = S * 0.48, bw = S * 0.66, bh = S * 0.21, br = bh / 2;
+      g.moveTo(bx + br, by); g.arcTo(bx + bw, by, bx + bw, by + bh, br); g.arcTo(bx + bw, by + bh, bx, by + bh, br); g.arcTo(bx, by + bh, bx, by, br); g.arcTo(bx, by, bx + bw, by, br); g.closePath();
+      g.fill('nonzero');
+    });
+    // trois VMs : des tâches de longueurs différentes, mais la dernière se termine au même instant sur chacune
+    const end = S * 0.645, h = S * 0.042, r = h / 2, gap = S * 0.018;
+    [[0.455, [0.12, 0.17]], [0.525, [0.2, 0.09]], [0.595, [0.07, 0.08, 0.11]]].forEach(([y, segs]) => {
+      let x = end - S * segs.reduce((a, b) => a + b, 0) - gap * (segs.length - 1);
+      segs.forEach(w => { g.fillStyle = bg; sqPath(g, x, S * y, S * w, h, r); g.fill(); x += S * w + gap; });
+    });
+    g.fillStyle = '#ff7a3d'; sqPath(g, end + S * 0.02, S * 0.425, S * 0.02, S * 0.255, S * 0.01); g.fill();
+  },
   // les agents IA : un bouclier, et l'étincelle de l'IA qu'il protège
   agents(g, S){
     const bg = grad(g, S, '#7c7bff', '#2e27a8');
@@ -930,6 +949,19 @@ const DATA = {
 <div class="links">${L('rapport-audit-llm.pdf', 'Lire le rapport ↗')}${L('https://github.com/adnr140/LLM-RedTeaming-Audit', 'Voir le code ↗')}</div>` },
     { icon: 'paperbot', name: 'Paperbot', tag: ['Terminé', 'live'], desc: 'Classer des documents sensibles, médicaux ou bancaires, à partir d\'un scan.', meta: 'Mars 2026 · équipe de 4',
       body: `<p class="lead">Classer des documents sensibles, médicaux ou bancaires, à partir d'un simple scan.</p><p>Un projet d'équipe à quatre, mené à partir de mars 2026.</p>` },
+    { icon: 'cloud', name: 'Optimisation cloud', tag: ['Terminé', 'live'], desc: 'Répartir des tâches sur trois VMs Google Cloud pour finir plus tôt, puis payer moins : −20 % de temps, mesuré.', meta: 'Nov. 2026 · ESILV · Go · GCP · équipe de 3',
+      body: `<p class="lead">Dix tâches, trois machines louées chez Google Cloud. Où lancer chacune pour que le lot finisse le plus tôt possible, sans dépasser la mémoire d'aucune VM ?</p>
+<p>La méthode habituelle, Round-Robin, distribue les tâches à tour de rôle. Elle équilibre leur nombre, pas leur durée : une VM finit tard pendant que les autres attendent, payées à ne rien faire. Nous avons écrit en Go un optimiseur qui équilibre le temps, et nous l'avons mesuré sur de vraies VMs.</p>
+<div class="shot"><img src="assets/cloud-gantt.png" alt="Deux diagrammes de Gantt du même lot de 10 tâches : avec Round-Robin, une VM finit à 20,1 s pendant que les autres attendent ; avec l'optimiseur, les trois VMs finissent ensemble, à 16,2 s." loading="lazy" width="1950" height="810"></div>
+<h4>Construire, améliorer, prouver</h4><p>Le scheduler décide, l'orchestrateur exécute : les deux ne se parlent que par un fichier CSV. L'optimiseur construit un premier plan (LPT), l'améliore par recherche locale, le secoue 200 fois pour sortir des minimums locaux, puis un branch and bound prouve qu'on ne peut pas faire mieux. Chaque mouvement est jugé par un modèle de durée calé sur nos mesures, qui tombe à 0,5 s près de la réalité.</p>
+<h4>Ce qu'on a mesuré</h4><ul>
+<li><b>−20 %</b><span>de temps par rapport à Round-Robin, en médiane sur 5 runs réels (16,2 s contre 20,1 s), avec p ≈ 0,008.</span></li>
+<li><b>39 / 40</b><span>petits problèmes dont l'optimum est connu : l'optimiseur le trouve 39 fois. Round-Robin en reste à 56 % en moyenne.</span></li>
+<li><b>25 / 25</b><span>runs réels vérifiés automatiquement : chaque tâche lancée une fois, sur la bonne VM, sans erreur.</span></li></ul>
+<h4>La surprise : les cœurs partagés</h4><p>Une e2-medium coûte moitié moins cher qu'une e2-standard-2. Nous avons mesuré qu'après une pause, elle va aussi vite pendant environ deux minutes, puis tombe d'un coup à la moitié, sans que Linux ne voie rien. Nos lots durent 16 secondes : en mélangeant les deux types de VM, le même lot coûte <b>48 % moins cher</b> qu'avec Round-Robin (prédit par le modèle).</p>
+<div class="shot"><img src="assets/cloud-burst.png" alt="La vitesse de calcul de deux VMs en continu : l'e2-medium suit l'e2-standard-2 pendant 122 secondes, puis tombe à la moitié." loading="lazy" width="1800" height="780"></div>
+<div class="links">${L('https://github.com/adnr140/cloud-optimization', 'Voir le code ↗')}</div>
+<p class="note">Projet du cours de Cloud Computing de l'ESILV, en équipe de trois.</p>` },
     { icon: 'liv', name: 'Liv In Paris', tag: ['Terminé', 'live'], desc: 'Une application sur le modèle d\'Uber, avec Dijkstra pour le trajet le plus court.', meta: '2024 · graphes · Dijkstra',
       body: `<p class="lead">Une application qui reprend le principe d'Uber.</p><p>Paris est modélisé comme un graphe : l'algorithme de Dijkstra y calcule le trajet le plus court entre deux points. Une interface permet ensuite de passer commande.</p>` },
     { icon: 'hexa', name: 'Robot hexapode', tag: ['Terminé', 'live'], desc: 'La conception 3D d\'un robot à six pattes.', meta: '2023 · PIX 1 · SolidWorks',
