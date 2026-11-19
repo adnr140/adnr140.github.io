@@ -286,6 +286,7 @@ footer button:hover{color:#fff}
 .detail .ic{width:120px;height:120px;margin:0 auto;display:block;border-radius:22.5%;object-fit:cover}
 .detail .shot{display:block;margin:24px 0 0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
 .detail .shot img{display:block;width:100%;height:auto}
+.detail .shot + p{margin-top:20px}
 .detail .shot.phone{max-width:260px;margin:24px auto 0;border-radius:36px;box-shadow:none}
 .detail .hd{text-align:center;margin-top:14px}
 .detail h3{margin:10px 0 0;font:inherit;font-size:22px;font-weight:500;letter-spacing:-.02em;text-wrap:balance}
@@ -355,7 +356,7 @@ footer button:hover{color:#fff}
     <div class="info" aria-live="polite"></div>
     <div class="stage" tabindex="0" aria-label="Ce sur quoi je travaille en ce moment : flèches gauche et droite pour défiler, Entrée pour ouvrir"><canvas aria-hidden="true"></canvas></div>
     <div class="ctrls"><button class="prev" type="button" aria-label="Précédent"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3m4-4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="open" type="button" aria-label="Ouvrir la fiche"><i></i></button><button class="next" type="button" aria-label="Suivant"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant en sécurité de l'IA, un outil pour choisir sa voiture, un jeu mobile, et une application pour découvrir de la musique.</p>
+    <p class="cap narrow"><b>Ce que je construis, en parallèle de l'école.</b>Mon activité de consultant en sécurité de l'IA, un outil pour choisir sa voiture, un jeu mobile, et Overdisc, pour découvrir de la musique comme on lit une carte.</p>
     <a class="cue" href="#experience"><span>Mon expérience</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
 
@@ -800,6 +801,7 @@ function chrome(g, x0, y0, x1, y1){ const gr = g.createLinearGradient(x0, y0, x1
 function hexPath(g, cx, cy, r, rot = 0){ g.beginPath(); for (let i = 0; i < 6; i++) { const a = rot + i * Math.PI / 3, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); }
 const MIRAGE = new Image(); MIRAGE.src = 'assets/mirage-logo.png';
 const TOPPLE = new Image(); TOPPLE.src = 'assets/topple-board.jpg';
+const OVERDISC = new Image(); OVERDISC.src = 'assets/overdisc-logo.jpg';
 // le fond d'une icône : un dégradé en diagonale, comme les icônes d'applications ; renvoyé pour « percer » le pictogramme de la même couleur
 // LBL : pendant qu'une icône titrée dessine son pictogramme réduit, le fond reste plein cadre et le dégradé « perçant » est recalé
 let LBL = null;
@@ -926,20 +928,10 @@ const ICON = {
     if (TOPPLE.complete && TOPPLE.naturalWidth) { g.drawImage(TOPPLE, 0, 0, S, S); return; }
     grad(g, S, '#7a4a26', '#3a2414');
   },
-  // le projet musical : rose et violet ; un disque blanc, et sur lui le graphe des artistes
-  crate(g, S){
-    const bg = grad(g, S, '#ff3d6e', '#7b2ff7');
-    const c = S / 2, R = S * 0.31;
-    lift(g, S, () => { g.fillStyle = '#ffffff'; g.beginPath(); g.arc(c, c, R, 0, 7); g.fill(); });
-    g.strokeStyle = 'rgba(123,47,247,.13)'; g.lineWidth = S * 0.006;
-    for (let r = S * 0.15; r < R - S * 0.02; r += S * 0.032) { g.beginPath(); g.arc(c, c, r, 0, 7); g.stroke(); }
-    const nodes = [[-1.15, 0.205], [0.3, 0.205], [2.3, 0.205]];
-    g.strokeStyle = bg; g.lineWidth = S * 0.016; g.lineCap = 'round';
-    nodes.forEach(([a, r]) => { g.beginPath(); g.moveTo(c, c); g.lineTo(c + Math.cos(a) * S * r, c + Math.sin(a) * S * r); g.stroke(); });
-    g.beginPath(); g.moveTo(c + Math.cos(nodes[0][0]) * S * nodes[0][1], c + Math.sin(nodes[0][0]) * S * nodes[0][1]); g.lineTo(c + Math.cos(nodes[1][0]) * S * nodes[1][1], c + Math.sin(nodes[1][0]) * S * nodes[1][1]); g.stroke();
-    g.fillStyle = bg; g.beginPath(); g.arc(c, c, S * 0.095, 0, 7); g.fill();
-    nodes.forEach(([a, r], i) => { g.fillStyle = bg; g.beginPath(); g.arc(c + Math.cos(a) * S * r, c + Math.sin(a) * S * r, S * [0.042, 0.034, 0.03][i], 0, 7); g.fill(); });
-    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(c, c, S * 0.018, 0, 7); g.fill();
+  // overdisc : son icône officielle, le tourbillon spectral et le nom dedans
+  overdisc(g, S){
+    tile(g, S, '#08080d', '#08080d');
+    if (OVERDISC.complete && OVERDISC.naturalWidth) g.drawImage(OVERDISC, 0, 0, S, S);
   },
   // mirage : le logo
   mirage(g, S){
@@ -1105,15 +1097,24 @@ const DATA = {
 <li class="plain"><span>Une vraie fin : trois touches au maximum, puis des pierres qui tombent sur le plateau. En simulation, une touche de plus aurait sauvé la partie dans 38 défaites sur 40.</span></li>
 <li class="plain"><span>Savoir où pousser : un anneau marque le premier domino des chaînes de 5 ou plus ; une première touche allume la chaîne et ses points, la seconde la fait tomber.</span></li></ul>
 <p class="note">Développement précoce : la mécanique tient, le visuel n'est pas encore à la hauteur.</p>` },
-    { icon: 'crate', name: 'Crate', tag: ['En conception', 'build'], desc: 'Un site et une application de digging musical : un graphe de ce qu\'on découvre, une carte du monde à explorer, et ses statistiques d\'écoute.', meta: 'Web et mobile · nom provisoire, pas encore de prototype',
-      body: `<p class="lead">Découvrir de la musique comme on explore une carte : de lien en lien, sans jamais s'arrêter.</p>
-<p>On connecte Apple Music, Spotify ou d'autres services, et ses écoutes deviennent un graphe : chaque artiste est un nœud, relié aux artistes proches. En suivant les liens, on tombe sur des artistes qu'on n'aurait jamais trouvés seul.</p>
-<h4>Les idées de départ</h4><ul>
-<li class="plain"><span>Le graphe de ce qu'on a découvert, qui grandit à chaque écoute.</span></li>
-<li class="plain"><span>Une carte de la Terre : on clique sur un endroit et on tombe sur une musique de là-bas.</span></li>
-<li class="plain"><span>Une part de jeu et des statistiques d'écoute, pour donner envie de creuser toujours un peu plus.</span></li></ul>
-<h4>Une question encore ouverte</h4><p>Les gros nœuds du graphe doivent-ils être les artistes que j'écoute le plus, ou les artistes les plus connus ?</p>
-<p class="note">Le parti pris : une interface sobre et minimaliste, de très belles couleurs, et des effets comme le métal liquide de ce site.</p>` },
+    { icon: 'overdisc', name: 'Overdisc', tag: ['Prototype', 'build'], desc: 'Découvrir de la musique comme on lit une carte : chaque artiste est un point relié à ses voisins, sur un graphe ou sur un globe.', meta: 'Prototype · JavaScript, d3, WebGL',
+      body: `<p class="lead">La musique, comme une carte : nos écoutes deviennent un graphe où chaque artiste est un point, relié à ses voisins.</p>
+<div class="shot"><img src="assets/overdisc-wordmark.jpg" alt="Le logo d'Overdisc : un tourbillon spectral vert, violet et orange, à côté du nom « overdisc »." loading="lazy" width="1256" height="512"></div>
+<p>Les applis de streaming recommandent en ligne droite, alors on écoute en boucle les mêmes artistes. Overdisc montre plutôt la forme de nos goûts, et ce qu'il y a juste à côté. Chaque point ne propose qu'un seul inconnu à la fois : on avance au rythme de sa curiosité, en suivant les liens, en tournant un globe ou en lançant un dé.</p>
+<div class="shot"><img src="assets/overdisc-graphe.jpg" alt="Le graphe d'Overdisc : des points colorés par genre, reliés par des courbes fines, avec les noms Daft Punk, Kendrick Lamar, Radiohead, Stromae, Air…" loading="lazy" width="1600" height="1000"></div>
+<h4>Le point devient une carte</h4><p>Un clic, et le point s'étire en carte de verre liquide, liserée de sa couleur. Elle reste accrochée à son point quand on déplace le graphe, et les voisins s'écartent pour lui laisser de la place. Elle montre une photo, une bio courte, ce qui relie l'artiste aux autres (« ils ont joué ensemble », « membres communs »), et une radio qui démarre toute seule.</p>
+<div class="shot"><img src="assets/overdisc-carte.jpg" alt="La carte en verre liée au point Daft Punk : photo, genre « French touch · France », deux anecdotes avec Kavinsky et Phoenix, et la radio en lecture." loading="lazy" width="1600" height="1000"></div>
+<h4>Ce qu'on y trouve</h4><ul>
+<li><b>Graphe</b><span>Près de 270 genres, en 19 familles. En dézoomant, les points gardent leur taille et le graphe devient une carte de couleurs.</span></li>
+<li><b>Dé</b><span>Un saut vers un voisin inconnu, tiré au sort en favorisant les moins connus et les plus éloignés de nos habitudes.</span></li>
+<li><b>Terre</b><span>Un globe qu'on fait tourner : un clic sur un pays fait écouter de la musique de là-bas.</span></li>
+<li><b>Lecteur</b><span>Le point de l'artiste qui joue bat au tempo du morceau, et le fond prend les couleurs de la pochette.</span></li>
+<li><b>Carnet</b><span>Une part de jeu : niveaux, quête du jour, badges, et le spectre de ses genres.</span></li></ul>
+<div class="shot"><img src="assets/overdisc-terre.jpg" alt="Le globe centré sur l'Europe, la France surlignée, avec le panneau de ses artistes et un bouton « Écouter quelque chose d'ici »." loading="lazy" width="1600" height="1000"></div>
+<h4>Sous le capot</h4><p>Un seul fichier HTML, en JavaScript sans framework : d3 pour le graphe et le globe, un shader WebGL pour le logo, du verre liquide avec une vraie réfraction en filtre SVG, et des animations à ressorts. Les données viennent de Deezer (artistes proches, extraits, BPM), de Wikipédia pour les bios et les anecdotes, et d'Apple MusicKit. Un petit serveur Node signe le jeton Apple Music sans que la clé quitte la machine.</p>
+<div class="shot phone"><img src="assets/overdisc-mobile.jpg" alt="La carte Radiohead sur téléphone, avec une anecdote liée à Portishead et la radio en lecture." loading="lazy" width="585" height="1266"></div>
+<p>« Overdisc » est l'anagramme de <i>discover</i>, en clin d'œil à <i>Veridis Quo</i> de Daft Punk.</p>
+<p class="note">Un prototype qui tourne en local, sans version publique pour l'instant. Sans compte, on écoute des extraits de 30 s ; les connexions Apple Music et Spotify sont codées, mais pas encore testées de bout en bout, et le carnet affiche des données d'exemple. Conception, design et développement : moi, avec Claude Code.</p>` },
   ],
   exp: [
     { logo: 'assets/logos/leorunning.png', name: 'LeoRunning Club', role: 'Responsable communication, antenne nantaise', meta: 'Mai 2024 – mai 2025 · Nantes',
@@ -1416,6 +1417,7 @@ const redrawTl = () => document.querySelectorAll('.tl').forEach(ol => DATA[ol.da
 if (document.fonts) document.fonts.ready.then(() => { redrawAll(); redrawTl(); });
 MIRAGE.addEventListener('load', redrawAll);
 TOPPLE.addEventListener('load', redrawAll);
+OVERDISC.addEventListener('load', redrawAll);
 
 /* ================= expérience et formation : la frise ================= */
 const tls = [...document.querySelectorAll('.tl')].map(ol => {
