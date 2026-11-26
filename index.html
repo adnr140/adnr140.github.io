@@ -1060,7 +1060,7 @@ const ICON = {
     });
     g.fillStyle = '#ff7a3d'; sqPath(g, end + S * 0.02, S * 0.425, S * 0.02, S * 0.255, S * 0.01); g.fill();
   },
-  // haystack : une botte de foin dorée, et la loupe qui y trouve l'aiguille rouge
+  // détection d'intrusions : une botte de foin dorée, et la loupe qui y trouve l'aiguille rouge
   haystack(g, S){
     grad(g, S, '#f7c95a', '#d97a1f');
     const R = [[0.2,0.34,-0.5],[0.3,0.62,0.4],[0.66,0.3,0.7],[0.74,0.62,-0.3],[0.46,0.24,0.2],[0.2,0.52,1.1],[0.82,0.44,-0.9],[0.4,0.76,-0.7],[0.62,0.78,0.9],[0.28,0.44,0.15],[0.72,0.46,1.3]];
@@ -1074,7 +1074,7 @@ const ICON = {
     g.strokeStyle = '#e5484d'; g.lineWidth = S * 0.03; g.lineCap = 'round'; g.beginPath(); g.moveTo(S * 0.42, S * 0.54); g.lineTo(S * 0.545, S * 0.415); g.stroke();
     g.fillStyle = '#e5484d'; g.beginPath(); g.arc(S * 0.545, S * 0.415, S * 0.02, 0, Math.PI * 2); g.fill();
   },
-  // feu vert : un feu tricolore blanc sur l'asphalte de nuit, le vert allumé
+  // carrefour connecté : un feu tricolore blanc sur l'asphalte de nuit, le vert allumé
   feuvert(g, S){
     grad(g, S, '#33465a', '#0e1620');
     lift(g, S, () => { g.fillStyle = '#ffffff'; sqPath(g, S * 0.37, S * 0.17, S * 0.26, S * 0.66, S * 0.13); g.fill(); });
@@ -1111,7 +1111,7 @@ const ICON = {
 
 /* les titres sur les icônes des projets scolaires et personnels : un mot en haut, un en bas, le pictogramme réduit au milieu */
 const TITLE = {
-  audit: ['Audit LLM', 'Red teaming'], paperbot: ['Paper', 'Bot'], cloud: ['Photo', 'finish'], haystack: ['Haystack', ''], feuvert: ['Feu', 'vert'], agents: ['Assurance', 'Agents IA'],
+  audit: ['Audit LLM', 'Red teaming'], paperbot: ['Paper', 'Bot'], cloud: ['Cloud', 'Scheduling'], haystack: ['Intrusion', 'Detection'], feuvert: ['Carrefour', 'IoT'], agents: ['Assurance', 'Agents IA'],
   liv: ['Liv in', 'Paris'], hexa: ['Robot', 'Hexapode'], topple: ['Topple', '']
 };
 function titleText(g, S, txt, y, map){
@@ -1165,7 +1165,7 @@ const DATA = {
 <div class="links">${L('rapport-audit-llm.pdf', 'Lire le rapport ↗')}${L('https://github.com/adnr140/LLM-RedTeaming-Audit', 'Voir le code ↗')}</div>` },
     { icon: 'paperbot', name: 'Paperbot', tag: ['Terminé', 'live'], desc: 'Classer des documents sensibles, médicaux ou bancaires, à partir d\'un scan.', meta: 'Mars 2026 · équipe de 4',
       body: `<p class="lead">Classer des documents sensibles, médicaux ou bancaires, à partir d'un simple scan.</p><p>Un projet d'équipe à quatre, mené à partir de mars 2026.</p>` },
-    { icon: 'cloud', name: 'Photo-finish', tag: ['Terminé', 'live'], desc: 'Un ordonnanceur qui fait franchir la ligne à trois VMs Google Cloud au même instant : 20 % plus rapide que Round-Robin, mesuré, et jusqu\'à 48 % moins cher.', meta: 'Nov. 2026 · ESILV · Go · GCP · équipe de 3',
+    { icon: 'cloud', name: 'Ordonnancement multi-VM sur Google Cloud par recherche locale et branch and bound', tag: ['Terminé', 'live'], desc: 'Répartir des tâches sur trois VMs pour qu\'elles finissent au même instant : 20 % plus rapide que Round-Robin, mesuré, et jusqu\'à 48 % moins cher.', meta: 'Nov. 2026 · ESILV · Go · GCP · équipe de 3',
       body: `<p class="lead">Dix tâches, trois machines louées chez Google Cloud. Où lancer chacune pour que le lot finisse le plus tôt possible, sans dépasser la mémoire d'aucune VM ?</p>
 <p>La méthode habituelle, Round-Robin, distribue les tâches à tour de rôle. Elle équilibre leur nombre, pas leur durée : une VM finit tard pendant que les autres attendent, payées à ne rien faire. Nous avons écrit en Go un optimiseur qui équilibre le temps, et nous l'avons mesuré sur de vraies VMs.</p>
 <div class="shot"><img src="assets/cloud-gantt.png" alt="Deux diagrammes de Gantt du même lot de 10 tâches : avec Round-Robin, une VM finit à 20,1 s pendant que les autres attendent ; avec l'optimiseur, les trois VMs finissent ensemble, à 16,2 s." loading="lazy" width="1950" height="810"></div>
@@ -1177,7 +1177,7 @@ const DATA = {
 <h4>La surprise : les cœurs partagés</h4><p>Une e2-medium coûte moitié moins cher qu'une e2-standard-2. Nous avons mesuré qu'après une pause, elle va aussi vite pendant environ deux minutes, puis tombe d'un coup à la moitié, sans que Linux ne voie rien. Nos lots durent 16 secondes : en mélangeant les deux types de VM, le même lot coûte <b>48 % moins cher</b> qu'avec Round-Robin (prédit par le modèle).</p>
 <div class="shot"><img src="assets/cloud-burst.png" alt="La vitesse de calcul de deux VMs en continu : l'e2-medium suit l'e2-standard-2 pendant 122 secondes, puis tombe à la moitié." loading="lazy" width="1800" height="780"></div>
 <div class="links">${L('https://github.com/adnr140/cloud-optimization', 'Voir le code ↗')}</div>
-<p class="note">Projet du cours de Cloud Computing de l'ESILV, en équipe de trois. Le nom vient du diagramme : avec l'optimiseur, les trois VMs franchissent la ligne ensemble.</p>` },
+<p class="note">Projet du cours de Cloud Computing de l'ESILV, en équipe de trois.</p>` },
     { icon: 'agents', name: 'Quantification actuarielle du risque et tarification d\'assurance des agents IA', tag: ['En cours', 'build'], desc: 'Tarifer l\'assurance d\'agents IA à partir de taux de succès d\'attaque mesurés ; je porte le volet red teaming.', meta: 'Depuis sept. 2026 · projet de Master 1 · équipe de 3',
       body: `<p class="lead">Tarifer l'assurance d'un agent IA à partir de taux de succès d'attaque réellement mesurés.</p>
 <p>Mon projet de Master 1, en équipe de trois, qui réunit la cybersécurité, la sécurité de l'IA et l'actuariat. Je porte le volet red teaming : mesurer à quel point chaque agent cède aux attaques, pour qu'on puisse en déduire un risque, puis un prix.</p>
@@ -1185,7 +1185,7 @@ const DATA = {
 <li class="plain"><span>Les modèles cibles sont choisis : Qwen 8B en local, un modèle souverain sur OVHcloud et deux modèles commerciaux.</span></li>
 <li class="plain"><span>Le banc d'essai AgentDojo mesure d'abord l'utilité de base de Qwen 8B sur des tâches métier, avant toute attaque.</span></li></ul>
 <p class="note">En cours depuis septembre 2026.</p>` },
-    { icon: 'haystack', name: 'Haystack', tag: ['En cours', 'build'], desc: 'Trouver les attaques dans le trafic IoT–edge–cloud sans noyer l\'équipe sécurité : viser 95 % d\'attaques détectées pour au plus 1 % de fausses alertes.', meta: 'En cours · Python · scikit-learn · équipe de 4',
+    { icon: 'haystack', name: 'Détection d\'intrusions IoT–edge–cloud par machine learning, à 1 % de faux positifs', tag: ['En cours', 'build'], desc: 'Trouver les attaques dans le trafic IoT–edge–cloud sans noyer l\'équipe sécurité : viser 95 % d\'attaques détectées pour au plus 1 % de fausses alertes.', meta: 'En cours · Python · scikit-learn · équipe de 4',
       body: `<p class="lead">Des centaines d'objets connectés parlent au cloud, et chaque connexion est une porte. Trouver les attaques dans ce trafic, sans noyer l'équipe sécurité sous les fausses alertes.</p>
 <p>Un outil de détection trop bavard enterre les vraies attaques sous les alertes inutiles ; trop permissif, il les laisse passer. Notre question : combien d'attaques un modèle peut-il détecter en ne signalant qu'au plus 1 % du trafic légitime ? Et quelle part de ce score vient du comportement du trafic, plutôt que des artefacts du laboratoire où il a été enregistré ?</p>
 <h4>Les données</h4><p>Le jeu TON_IoT de l'UNSW Canberra : 211 043 flux réseau entre capteurs IoT, nœuds edge et services cloud, avec neuf types d'attaques (DDoS, ransomware, injection, man-in-the-middle…). Le premier audit a retiré 20 569 doublons, et écarté les adresses IP : sur un banc de test, quelques machines lancent toutes les attaques, et un modèle apprendrait qui attaque plutôt que comment.</p>
@@ -1195,7 +1195,7 @@ const DATA = {
 <li><b>1 000</b><span>rééchantillonnages bootstrap, pour donner un intervalle de confiance à chaque score.</span></li>
 <li><b>1 type</b><span>d'attaque retiré de l'entraînement à chaque essai, pour tester le modèle face à l'inconnu.</span></li></ul>
 <p class="note">Projet de machine learning de la majeure Cloud Computing et Cybersécurité, en équipe de quatre. En cours : le cadrage est terminé.</p>` },
-    { icon: 'feuvert', name: 'Feu vert', tag: ['En cours', 'build'], desc: 'Un carrefour connecté, de l\'ESP32 au cloud, conçu pour qu\'aucune commande pirate ne puisse jamais allumer deux feux verts à la fois.', meta: 'En cours · PI² · ESP32 · MQTT/TLS · Docker',
+    { icon: 'feuvert', name: 'Carrefour connecté IoT–Cloud sécurisé : ESP32, MQTT/TLS et résilience aux cyberattaques', tag: ['En cours', 'build'], desc: 'Un carrefour connecté, de l\'ESP32 au cloud, conçu pour qu\'aucune commande pirate ne puisse jamais allumer deux feux verts à la fois.', meta: 'En cours · PI² · ESP32 · MQTT/TLS · Docker',
       body: `<p class="lead">Un carrefour miniature, piloté par un ESP32 et supervisé depuis le cloud. Le défi : qu'il reste sûr quand on l'attaque, et qu'il continue de tourner quand le réseau tombe.</p>
 <p>Une maquette de carrefour à quatre branches, avec ses feux et ses capteurs de présence. L'ESP32 gère les cycles, lit les capteurs et envoie tout au serveur en MQTT chiffré par TLS. Côté cloud, une plateforme conteneurisée avec Docker : Mosquitto reçoit les messages, un service Python les valide, PostgreSQL les garde, Grafana les affiche, et une API FastAPI permet d'envoyer des commandes authentifiées.</p>
 <div class="shot"><img src="assets/feuvert-archi.jpg" alt="L'architecture : l'ESP32 envoie ses états en MQTT-TLS à Mosquitto, puis à un service Python, PostgreSQL et Grafana ; les commandes passent par une API FastAPI et sont validées sur l'ESP32." loading="lazy" width="1600" height="870"></div>
@@ -1644,7 +1644,7 @@ class Showcase {
       const st = c.stack ? `<ul class="st">${c.stack.map(x => `<li>${x}</li>`).join('')}</ul>` : '';
       const ln = (c.links || []).map(([h, t]) => `<a class="ext" href="${h}" target="_blank" rel="noopener">${t}</a>`).join('');
       const txt = `<div class="top"><canvas class="pi" width="256" height="256" aria-hidden="true"></canvas><span class="tag ${it.tag[1]}">${it.tag[0]}</span></div>
-        <h3>${it.name}</h3><p class="d">${it.desc}</p>${kpi}${st}<div class="ft"><span class="more">Lire la fiche <i>→</i></span>${ln}</div>`;
+        <h3>${it.name}</h3><p class="d">${it.desc.replace(/ %/g, '\u00a0%')}</p>${kpi}${st}<div class="ft"><span class="more">Lire la fiche <i>→</i></span>${ln}</div>`;
       el.innerHTML = `<button class="hit" type="button" aria-label="Ouvrir la fiche : ${it.name.replace(/"/g, '&quot;')}"></button>` + (c.feat ? `<div class="txt">${txt}</div><div class="vis">${c.vis || ''}</div>` : txt);
       el.querySelector('.hit').addEventListener('click', () => { pvHide(); openDetail(it); });
       const zones = [el.querySelector('canvas.pi'), el.querySelector('h3')];
