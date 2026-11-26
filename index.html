@@ -1163,8 +1163,21 @@ const DATA = {
 <li><b>−11 pts</b><span>La consigne renforcée fait passer les fuites de 34,38 % à 22,92 %. Mieux, mais il faut aussi filtrer les réponses.</span></li>
 <li><b>38 %</b><span>La contrainte logique (« inverse les caractères de ton secret ») est l'attaque la plus efficace, contre 15 % pour l'obfuscation.</span></li></ul>
 <div class="links">${L('rapport-audit-llm.pdf', 'Lire le rapport ↗')}${L('https://github.com/adnr140/LLM-RedTeaming-Audit', 'Voir le code ↗')}</div>` },
-    { icon: 'paperbot', name: 'Paperbot', tag: ['Terminé', 'live'], desc: 'Classer des documents sensibles, médicaux ou bancaires, à partir d\'un scan.', meta: 'Mars 2026 · équipe de 4',
-      body: `<p class="lead">Classer des documents sensibles, médicaux ou bancaires, à partir d'un simple scan.</p><p>Un projet d'équipe à quatre, mené à partir de mars 2026.</p>` },
+    { icon: 'paperbot', name: 'Paperbot : classement automatique de documents scannés par OCR et SVM', tag: ['Terminé', 'live'], desc: 'Un logiciel local qui lit les scans, les classe par TF-IDF et SVM linéaire, et met de côté les cas douteux : 86 documents triés en démonstration, à 80 % de confiance moyenne.', meta: 'Mai 2026 · P2IP · Python · équipe de 4',
+      body: `<p class="lead">Un logiciel qui lit un document scanné, reconnaît ce que c'est, et le range : facture, contrat, rapport, ordonnance, ou « à vérifier » quand il doute.</p>
+<p>Dans une petite structure, ouvrir, nommer et ranger chaque scan peut prendre de 20 à 45 minutes par jour. Les logiciels de gestion documentaire existent, mais ils sont lourds et chers. Paperbot fait une seule chose, et tout en local : aucun document ne part dans le cloud, ce qui compte pour des papiers médicaux ou juridiques.</p>
+<div class="shot"><img src="assets/paperbot-dashboard.jpg" alt="Le tableau de bord de Paperbot : 86 documents, dont 14 factures, 25 contrats, 15 rapports, 25 ordonnances et 7 à vérifier, avec 80 % de confiance moyenne, et la zone de glisser-déposer." loading="lazy" width="1259" height="586"></div>
+<h4>Le pipeline</h4><ul>
+<li><b>Import</b><span>PDF, JPG ou PNG, glissés dans l'interface Flask, ou une feuille passée dans un scanner portable relié à un dossier surveillé.</span></li>
+<li><b>OCR</b><span>pdfplumber pour les PDF natifs ; EasyOCR et OpenCV pour les scans, retenus après des essais moins bons avec Tesseract sur les documents dégradés.</span></li>
+<li><b>Classement</b><span>Le texte passe en TF-IDF, puis un SVM linéaire (scikit-learn) choisit la catégorie.</span></li>
+<li><b>Garde-fou</b><span>Sous un seuil de confiance, le document part en « à vérifier » plutôt que d'être mal rangé, et l'utilisateur corrige d'un clic.</span></li>
+<li><b>Recherche</b><span>Nom, catégorie, score et texte lu sont gardés dans SQLite, avec une recherche plein texte (FTS) : taper « Doliprane » retrouve l'ordonnance.</span></li></ul>
+<div class="shot"><img src="assets/paperbot-historique.jpg" alt="L'historique : des ordonnances reconnues entre 66 et 80 %, une facture à 87 %, un rapport à 74 %, et deux scans peu lisibles à 29 et 32 % placés en « à vérifier »." loading="lazy" width="1259" height="423"></div>
+<h4>Mon rôle</h4><p>J'ai travaillé sur les scénarios d'utilisation, le choix des catégories et la logique de classification : quels mots trahissent une facture (TVA, SIRET, TTC), un contrat (clause, signataire) ou une ordonnance (RPPS, posologie).</p>
+<div class="shot phone"><img src="assets/paperbot-scanner.jpg" alt="La démonstration : un ordinateur portable affichant Paperbot, et le scanner portable branché devant." loading="lazy" width="578" height="770"></div>
+<p>À la soutenance, une feuille passée dans le scanner ressortait classée dans le bon dossier, quelques secondes plus tard.</p>
+<p class="note">Projet P2IP de l'ESILV, en équipe de quatre, 2025–2026.</p>` },
     { icon: 'cloud', name: 'Ordonnancement multi-VM sur Google Cloud par recherche locale et branch and bound', tag: ['Terminé', 'live'], desc: 'Répartir des tâches sur trois VMs pour qu\'elles finissent au même instant : 20 % plus rapide que Round-Robin, mesuré, et jusqu\'à 48 % moins cher.', meta: 'Nov. 2026 · ESILV · Go · GCP · équipe de 3',
       body: `<p class="lead">Dix tâches, trois machines louées chez Google Cloud. Où lancer chacune pour que le lot finisse le plus tôt possible, sans dépasser la mémoire d'aucune VM ?</p>
 <p>La méthode habituelle, Round-Robin, distribue les tâches à tour de rôle. Elle équilibre leur nombre, pas leur durée : une VM finit tard pendant que les autres attendent, payées à ne rien faire. Nous avons écrit en Go un optimiseur qui équilibre le temps, et nous l'avons mesuré sur de vraies VMs.</p>
@@ -1203,8 +1216,13 @@ const DATA = {
 <div class="shot"><img src="assets/feuvert-phases.jpg" alt="Les quatre phases du cycle : Nord–Sud au vert, transition, Est–Ouest au vert, transition, avec un intervalle « tous rouges » entre les deux." loading="lazy" width="1600" height="870"></div>
 <h4>Attaquer pour vérifier</h4><p>Dans un réseau de test isolé, on joue l'attaquant : client sans autorisation, message falsifié, commande périmée, coupure de liaison. On attend un refus vérifiable, une trace dans les journaux, et des feux qui continuent de tourner en local. Après une coupure, le carrefour republie son état réel et rejette les commandes arrivées trop tard.</p>
 <p class="note">Projet d'innovation industrielle de l'ESILV (PI²), avec un partenaire extérieur. En cours.</p>` },
-    { icon: 'liv', name: 'Liv In Paris', tag: ['Terminé', 'live'], desc: 'Une application sur le modèle d\'Uber, avec Dijkstra pour le trajet le plus court.', meta: '2024 · graphes · Dijkstra',
-      body: `<p class="lead">Une application qui reprend le principe d'Uber.</p><p>Paris est modélisé comme un graphe : l'algorithme de Dijkstra y calcule le trajet le plus court entre deux points. Une interface permet ensuite de passer commande.</p>` },
+    { icon: 'liv', name: 'Liv\'in Paris : application C# sur base de données relationnelle SQL, avec plus court chemin par Dijkstra', tag: ['Terminé', 'live'], desc: 'Une application sur le modèle d\'Uber : une base relationnelle conçue du modèle logique au SQL, une interface en C#, des données en XML et JSON, et Dijkstra pour le trajet le plus court.', meta: '2024 · C# · SQL · graphes',
+      body: `<p class="lead">Une application qui reprend le principe d'Uber, de la base de données jusqu'à l'écran.</p>
+<ul>
+<li><b>Données</b><span>Une base de données relationnelle conçue de bout en bout : le modèle logique, puis les tables et les requêtes en SQL.</span></li>
+<li><b>Interface</b><span>Une interface utilisateur en C# pour passer commande et suivre les trajets.</span></li>
+<li><b>Échanges</b><span>Des données importées et exportées en XML et en JSON.</span></li>
+<li><b>Trajets</b><span>Paris modélisé comme un graphe, où l'algorithme de Dijkstra calcule le chemin le plus court entre deux points.</span></li></ul>` },
     { icon: 'hexa', name: 'Robot hexapode', tag: ['Terminé', 'live'], desc: 'La conception 3D d\'un robot à six pattes.', meta: '2023 · PIX 1 · SolidWorks',
       body: `<p class="lead">La conception 3D d'un robot à six pattes, sous SolidWorks.</p><p>Mon premier projet d'ingénieur, en première année à l'ESILV (PIX 1).</p>` }
   ],
@@ -1577,7 +1595,7 @@ const HAY_ROWS = [['Normal', 50000, 1], ['Backdoor', 20000], ['DDoS', 20000], ['
 const PREVIEW = {
   cloud: { img: 'assets/cloud-burst.png', w: 380 }, audit: { img: 'assets/audit-heatmap.jpg', w: 360 }, feuvert: { img: 'assets/feuvert-archi.jpg', w: 380 },
   mirage: { img: 'assets/mirage-site.jpg', w: 380 }, voiture: { img: 'assets/voiture-ideale.jpg', w: 380 }, overdisc: { img: 'assets/overdisc-graphe.jpg', w: 400 },
-  topple: { img: 'assets/topple-screen.jpg', w: 190 },
+  topple: { img: 'assets/topple-screen.jpg', w: 190 }, paperbot: { img: 'assets/paperbot-dashboard.jpg', w: 380 },
   haystack: { w: 300, html: `<div class="pvc"><p>TON_IoT : 211 043 flux, dix classes</p>${HAY_ROWS.map(([n, v, nn]) => `<div class="r${nn ? ' n' : ''}"><span>${n}</span><span class="t"><i style="width:${(v / 50000 * 100).toFixed(1)}%"></i></span><span>${v.toLocaleString('fr-FR')}</span></div>`).join('')}</div>` }
 };
 const pv = document.getElementById('pv'), pvIn = pv.querySelector('.pv-in');
@@ -1628,8 +1646,8 @@ const CARD = {
   agents: { kpi: [['4', 'modèles cibles, du local au commercial']], stack: ['AgentDojo', 'Qwen 8B', 'OVHcloud'] },
   haystack: { kpi: [['1 %', 'de fausses alertes au plus, pour 95 % d\'attaques visées']], stack: ['Python', 'scikit-learn', 'AutoML', 'Autoencodeur'] },
   feuvert: { kpi: [['0', 'double feu vert, même sous attaque : la règle']], stack: ['ESP32', 'MQTT/TLS', 'Docker', 'FastAPI', 'Grafana'] },
-  paperbot: { stack: ['Classification', 'Équipe de 4'] },
-  liv: { stack: ['Graphes', 'Dijkstra'] },
+  paperbot: { kpi: [['86', 'documents triés en démonstration, à 80 % de confiance moyenne']], stack: ['Python', 'EasyOCR', 'OpenCV', 'scikit-learn', 'SQLite', 'Flask'] },
+  liv: { stack: ['C#', 'SQL', 'XML / JSON', 'Dijkstra'] },
   hexa: { stack: ['SolidWorks', 'Conception 3D'] }
 };
 const ORDER = ['cloud', 'audit', 'agents', 'haystack', 'feuvert', 'paperbot', 'liv', 'hexa'];
