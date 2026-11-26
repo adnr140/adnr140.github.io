@@ -161,6 +161,20 @@ h1 span{display:block;color:var(--mute)}
 
 /* ---------- rangées ---------- */
 .row{padding-block:72px 20px;text-align:center}
+/* l'aperçu qui suit la souris quand on survole le logo d'un projet */
+.pv{position:fixed;left:0;top:0;z-index:70;pointer-events:none;opacity:0;transition:opacity .22s var(--ease);will-change:transform}
+.pv.on{opacity:1}
+.pv .pv-in{width:var(--pw,320px);overflow:hidden;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06),0 28px 60px -22px rgba(0,0,0,.5);transform:scale(.86);transform-origin:var(--po,0 0);transition:transform .5s cubic-bezier(.22,1.4,.36,1)}
+.pv.on .pv-in{transform:scale(1)}
+.pv img{display:block;width:100%;height:auto}
+.pv .pvc{padding:16px 18px 18px;font-size:12px;color:var(--ink-2)}
+.pv .pvc p{margin:0 0 10px;color:var(--mute)}
+.pv .pvc .r{display:grid;grid-template-columns:62px minmax(0,1fr) 46px;align-items:center;gap:8px;margin-top:5px;white-space:nowrap}
+.pv .pvc .r span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--mute)}
+.pv .pvc .t{height:7px;border-radius:999px;background:var(--chip);overflow:hidden}
+.pv .pvc .t i{display:block;height:100%;border-radius:inherit;background:#d97a1f}
+.pv .pvc .r.n .t i{background:var(--ink)}
+@media (hover:none){.pv{display:none}}
 /* les projets scolaires et personnels : deux projets mis en avant, avec leurs chiffres et un visuel, puis quatre cartes */
 .pgrid{padding-block:72px 20px;text-align:center}
 .pintro{margin:14px auto 0;max-width:46ch;font-size:13.5px;color:var(--mute)}
@@ -399,6 +413,7 @@ footer button:hover{color:#fff}
   <button class="skip" id="skip" type="button">Passer l'intro</button>
 </div>
 
+<div class="pv" id="pv" aria-hidden="true"><div class="pv-in"></div></div>
 <div class="topblur" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b></div>
 <nav class="bar" aria-label="Navigation">
   <a class="pill" href="#top" aria-label="Haut de la page"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.2 8 2.8l5.5 4.4V13a.8.8 0 0 1-.8.8H9.6V10H6.4v3.8H3.3a.8.8 0 0 1-.8-.8z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></a>
@@ -411,14 +426,14 @@ footer button:hover{color:#fff}
   <section class="hero" id="top">
     <div class="mark land" id="mark" role="img" aria-label="A.R."><div class="fbA"><span class="orb" style="width:120px;height:120px"></span></div></div>
     <h1 class="land" style="animation-delay:.14s">Bonjour, je suis Adonis.</h1>
-    <p class="sub land" style="animation-delay:.22s">Élève ingénieur en cybersécurité et cloud computing, je me spécialise en sécurité de l'IA. Je cherche un stage de 4 à 5 mois à partir d'avril 2027.</p>
+    <p class="sub land" style="animation-delay:.22s">Élève ingénieur en cybersécurité et cloud computing, je me spécialise en sécurité de l'IA.</p>
     <div class="ctas land" style="animation-delay:.3s"><a class="btn" href="#contact">Me contacter</a><a class="btn ghost" href="cv.pdf" target="_blank" rel="noopener">Mon CV</a></div>
     <div class="downw"><a class="down land" style="animation-delay:.75s" href="#perso"><span>Voir mes projets</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a></div>
   </section>
 
   <section class="pgrid" id="perso" data-grid="perso">
     <div class="label">Projets scolaires et personnels</div>
-    <p class="pintro narrow">Six projets, de la première année d'école à aujourd'hui. Chacun a sa fiche complète : ouvrez celle qui vous intrigue.</p>
+    <p class="pintro narrow">Huit projets, de la première année d'école à aujourd'hui. Chacun a sa fiche complète : ouvrez celle qui vous intrigue.</p>
     <div class="pj"></div>
     <a class="cue" href="#encours"><span>Ce sur quoi je travaille en ce moment</span><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></a>
   </section>
@@ -504,7 +519,7 @@ footer button:hover{color:#fff}
    <div class="wrap">
     <div class="label">Contact</div>
     <h2>Parlons-en.</h2>
-    <p>Un stage, une question : écrivez-moi.</p>
+    <p>Un projet, une question : écrivez-moi.</p>
     <div class="lower">
     <div class="mail"><code id="mail">adonis.ravier.pro@gmail.com</code><button type="button" id="copy">Copier</button></div>
     <div class="out"><a href="cv.pdf" target="_blank" rel="noopener">CV ↗</a><a href="https://github.com/adnr140" target="_blank" rel="noopener">GitHub ↗</a><a href="https://www.linkedin.com/in/adonis-ravier" target="_blank" rel="noopener">LinkedIn ↗</a></div>
@@ -684,7 +699,7 @@ const lines = [
   ['cmd', 'npx start portfolio'],
   ['ok', '✓ ingénieur  ESILV, sécurité de l\'IA'],
   ['ok', '✓ projets    5 terminés, 5 en cours'],
-  ['ok', '✓ statut     stage dès avril 2027'],
+  ['ok', '✓ passions   course, musique, F1'],
   ['b', '➜ prêt       adnr140.github.io']
 ];
 const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
@@ -1043,6 +1058,29 @@ const ICON = {
     });
     g.fillStyle = '#ff7a3d'; sqPath(g, end + S * 0.02, S * 0.425, S * 0.02, S * 0.255, S * 0.01); g.fill();
   },
+  // haystack : une botte de foin dorée, et la loupe qui y trouve l'aiguille rouge
+  haystack(g, S){
+    grad(g, S, '#f7c95a', '#d97a1f');
+    const R = [[0.2,0.34,-0.5],[0.3,0.62,0.4],[0.66,0.3,0.7],[0.74,0.62,-0.3],[0.46,0.24,0.2],[0.2,0.52,1.1],[0.82,0.44,-0.9],[0.4,0.76,-0.7],[0.62,0.78,0.9],[0.28,0.44,0.15],[0.72,0.46,1.3]];
+    g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = S * 0.026; g.lineCap = 'round';
+    R.forEach(([x, y, a]) => { const l = S * 0.07; g.beginPath(); g.moveTo(S * x - Math.cos(a) * l, S * y - Math.sin(a) * l); g.lineTo(S * x + Math.cos(a) * l, S * y + Math.sin(a) * l); g.stroke(); });
+    lift(g, S, () => {
+      g.lineWidth = S * 0.055; g.strokeStyle = '#ffffff'; g.beginPath(); g.arc(S * 0.48, S * 0.48, S * 0.17, 0, Math.PI * 2); g.stroke();
+      g.lineWidth = S * 0.075; g.beginPath(); g.moveTo(S * 0.605, S * 0.605); g.lineTo(S * 0.74, S * 0.74); g.stroke();
+    });
+    g.fillStyle = 'rgba(255,255,255,.92)'; g.beginPath(); g.arc(S * 0.48, S * 0.48, S * 0.142, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = '#e5484d'; g.lineWidth = S * 0.03; g.lineCap = 'round'; g.beginPath(); g.moveTo(S * 0.42, S * 0.54); g.lineTo(S * 0.545, S * 0.415); g.stroke();
+    g.fillStyle = '#e5484d'; g.beginPath(); g.arc(S * 0.545, S * 0.415, S * 0.02, 0, Math.PI * 2); g.fill();
+  },
+  // feu vert : un feu tricolore blanc sur l'asphalte de nuit, le vert allumé
+  feuvert(g, S){
+    grad(g, S, '#33465a', '#0e1620');
+    lift(g, S, () => { g.fillStyle = '#ffffff'; sqPath(g, S * 0.37, S * 0.17, S * 0.26, S * 0.66, S * 0.13); g.fill(); });
+    [[0.3, '#dfe3e8'], [0.5, '#dfe3e8']].forEach(([y, c]) => { g.fillStyle = c; g.beginPath(); g.arc(S * 0.5, S * y, S * 0.075, 0, Math.PI * 2); g.fill(); });
+    g.save(); g.shadowColor = 'rgba(30,215,140,.9)'; g.shadowBlur = S * 0.08; g.fillStyle = '#1ed78c';
+    g.beginPath(); g.arc(S * 0.5, S * 0.7, S * 0.075, 0, Math.PI * 2); g.fill(); g.restore();
+    g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.arc(S * 0.478, S * 0.678, S * 0.022, 0, Math.PI * 2); g.fill();
+  },
   // les agents IA : un bouclier, et l'étincelle de l'IA qu'il protège
   agents(g, S){
     const bg = grad(g, S, '#7c7bff', '#2e27a8');
@@ -1071,7 +1109,7 @@ const ICON = {
 
 /* les titres sur les icônes des projets scolaires et personnels : un mot en haut, un en bas, le pictogramme réduit au milieu */
 const TITLE = {
-  audit: ['Audit LLM', 'Red teaming'], paperbot: ['Paper', 'Bot'], cloud: ['Cloud', 'Optimisation'], agents: ['Assurance', 'Agents IA'],
+  audit: ['Audit LLM', 'Red teaming'], paperbot: ['Paper', 'Bot'], cloud: ['Photo', 'finish'], haystack: ['Haystack', ''], feuvert: ['Feu', 'vert'], agents: ['Assurance', 'Agents IA'],
   liv: ['Liv in', 'Paris'], hexa: ['Robot', 'Hexapode'], topple: ['Topple', '']
 };
 function titleText(g, S, txt, y, map){
@@ -1125,7 +1163,7 @@ const DATA = {
 <div class="links">${L('rapport-audit-llm.pdf', 'Lire le rapport ↗')}${L('https://github.com/adnr140/LLM-RedTeaming-Audit', 'Voir le code ↗')}</div>` },
     { icon: 'paperbot', name: 'Paperbot', tag: ['Terminé', 'live'], desc: 'Classer des documents sensibles, médicaux ou bancaires, à partir d\'un scan.', meta: 'Mars 2026 · équipe de 4',
       body: `<p class="lead">Classer des documents sensibles, médicaux ou bancaires, à partir d'un simple scan.</p><p>Un projet d'équipe à quatre, mené à partir de mars 2026.</p>` },
-    { icon: 'cloud', name: 'Optimisation cloud', tag: ['Terminé', 'live'], desc: 'Répartir des tâches sur trois VMs Google Cloud pour finir plus tôt, puis payer moins : −20 % de temps, mesuré.', meta: 'Nov. 2026 · ESILV · Go · GCP · équipe de 3',
+    { icon: 'cloud', name: 'Photo-finish', tag: ['Terminé', 'live'], desc: 'Un ordonnanceur qui fait franchir la ligne à trois VMs Google Cloud au même instant : 20 % plus rapide que Round-Robin, mesuré, et jusqu\'à 48 % moins cher.', meta: 'Nov. 2026 · ESILV · Go · GCP · équipe de 3',
       body: `<p class="lead">Dix tâches, trois machines louées chez Google Cloud. Où lancer chacune pour que le lot finisse le plus tôt possible, sans dépasser la mémoire d'aucune VM ?</p>
 <p>La méthode habituelle, Round-Robin, distribue les tâches à tour de rôle. Elle équilibre leur nombre, pas leur durée : une VM finit tard pendant que les autres attendent, payées à ne rien faire. Nous avons écrit en Go un optimiseur qui équilibre le temps, et nous l'avons mesuré sur de vraies VMs.</p>
 <div class="shot"><img src="assets/cloud-gantt.png" alt="Deux diagrammes de Gantt du même lot de 10 tâches : avec Round-Robin, une VM finit à 20,1 s pendant que les autres attendent ; avec l'optimiseur, les trois VMs finissent ensemble, à 16,2 s." loading="lazy" width="1950" height="810"></div>
@@ -1137,7 +1175,7 @@ const DATA = {
 <h4>La surprise : les cœurs partagés</h4><p>Une e2-medium coûte moitié moins cher qu'une e2-standard-2. Nous avons mesuré qu'après une pause, elle va aussi vite pendant environ deux minutes, puis tombe d'un coup à la moitié, sans que Linux ne voie rien. Nos lots durent 16 secondes : en mélangeant les deux types de VM, le même lot coûte <b>48 % moins cher</b> qu'avec Round-Robin (prédit par le modèle).</p>
 <div class="shot"><img src="assets/cloud-burst.png" alt="La vitesse de calcul de deux VMs en continu : l'e2-medium suit l'e2-standard-2 pendant 122 secondes, puis tombe à la moitié." loading="lazy" width="1800" height="780"></div>
 <div class="links">${L('https://github.com/adnr140/cloud-optimization', 'Voir le code ↗')}</div>
-<p class="note">Projet du cours de Cloud Computing de l'ESILV, en équipe de trois.</p>` },
+<p class="note">Projet du cours de Cloud Computing de l'ESILV, en équipe de trois. Le nom vient du diagramme : avec l'optimiseur, les trois VMs franchissent la ligne ensemble.</p>` },
     { icon: 'agents', name: 'Quantification actuarielle du risque et tarification d\'assurance des agents IA', tag: ['En cours', 'build'], desc: 'Tarifer l\'assurance d\'agents IA à partir de taux de succès d\'attaque mesurés ; je porte le volet red teaming.', meta: 'Depuis sept. 2026 · projet de Master 1 · équipe de 3',
       body: `<p class="lead">Tarifer l'assurance d'un agent IA à partir de taux de succès d'attaque réellement mesurés.</p>
 <p>Mon projet de Master 1, en équipe de trois, qui réunit la cybersécurité, la sécurité de l'IA et l'actuariat. Je porte le volet red teaming : mesurer à quel point chaque agent cède aux attaques, pour qu'on puisse en déduire un risque, puis un prix.</p>
@@ -1145,6 +1183,24 @@ const DATA = {
 <li class="plain"><span>Les modèles cibles sont choisis : Qwen 8B en local, un modèle souverain sur OVHcloud et deux modèles commerciaux.</span></li>
 <li class="plain"><span>Le banc d'essai AgentDojo mesure d'abord l'utilité de base de Qwen 8B sur des tâches métier, avant toute attaque.</span></li></ul>
 <p class="note">En cours depuis septembre 2026.</p>` },
+    { icon: 'haystack', name: 'Haystack', tag: ['En cours', 'build'], desc: 'Trouver les attaques dans le trafic IoT–edge–cloud sans noyer l\'équipe sécurité : viser 95 % d\'attaques détectées pour au plus 1 % de fausses alertes.', meta: 'En cours · Python · scikit-learn · équipe de 4',
+      body: `<p class="lead">Des centaines d'objets connectés parlent au cloud, et chaque connexion est une porte. Trouver les attaques dans ce trafic, sans noyer l'équipe sécurité sous les fausses alertes.</p>
+<p>Un outil de détection trop bavard enterre les vraies attaques sous les alertes inutiles ; trop permissif, il les laisse passer. Notre question : combien d'attaques un modèle peut-il détecter en ne signalant qu'au plus 1 % du trafic légitime ? Et quelle part de ce score vient du comportement du trafic, plutôt que des artefacts du laboratoire où il a été enregistré ?</p>
+<h4>Les données</h4><p>Le jeu TON_IoT de l'UNSW Canberra : 211 043 flux réseau entre capteurs IoT, nœuds edge et services cloud, avec neuf types d'attaques (DDoS, ransomware, injection, man-in-the-middle…). Le premier audit a retiré 20 569 doublons, et écarté les adresses IP : sur un banc de test, quelques machines lancent toutes les attaques, et un modèle apprendrait qui attaque plutôt que comment.</p>
+<h4>Mon rôle : les modèles</h4><p>Je porte le module des modèles : une recherche AutoML à budget fixe sur quatre familles (régression logistique, forêt aléatoire, gradient boosting, SVM linéaire, 30 configurations chacune), la sélection de variables, un ensemble par vote ou par stacking, et un autoencodeur entraîné sur le trafic normal seul. Lui n'a jamais vu d'attaque : il signale ce qu'il reconstruit mal, et peut donc repérer celles qu'on ne lui a jamais montrées.</p>
+<ul>
+<li><b>95 %</b><span>des attaques détectées pour au plus 1 % de fausses alertes : l'objectif fixé.</span></li>
+<li><b>1 000</b><span>rééchantillonnages bootstrap, pour donner un intervalle de confiance à chaque score.</span></li>
+<li><b>1 type</b><span>d'attaque retiré de l'entraînement à chaque essai, pour tester le modèle face à l'inconnu.</span></li></ul>
+<p class="note">Projet de machine learning de la majeure Cloud Computing et Cybersécurité, en équipe de quatre. En cours : le cadrage est terminé.</p>` },
+    { icon: 'feuvert', name: 'Feu vert', tag: ['En cours', 'build'], desc: 'Un carrefour connecté, de l\'ESP32 au cloud, conçu pour qu\'aucune commande pirate ne puisse jamais allumer deux feux verts à la fois.', meta: 'En cours · PI² · ESP32 · MQTT/TLS · Docker',
+      body: `<p class="lead">Un carrefour miniature, piloté par un ESP32 et supervisé depuis le cloud. Le défi : qu'il reste sûr quand on l'attaque, et qu'il continue de tourner quand le réseau tombe.</p>
+<p>Une maquette de carrefour à quatre branches, avec ses feux et ses capteurs de présence. L'ESP32 gère les cycles, lit les capteurs et envoie tout au serveur en MQTT chiffré par TLS. Côté cloud, une plateforme conteneurisée avec Docker : Mosquitto reçoit les messages, un service Python les valide, PostgreSQL les garde, Grafana les affiche, et une API FastAPI permet d'envoyer des commandes authentifiées.</p>
+<div class="shot"><img src="assets/feuvert-archi.jpg" alt="L'architecture : l'ESP32 envoie ses états en MQTT-TLS à Mosquitto, puis à un service Python, PostgreSQL et Grafana ; les commandes passent par une API FastAPI et sont validées sur l'ESP32." loading="lazy" width="1600" height="870"></div>
+<h4>Une règle que personne ne contourne</h4><p>Jamais deux verts en même temps sur deux axes qui se croisent. Cette règle vit sur l'ESP32, pas dans le cloud : une commande distante, même authentifiée, ne peut pas la contourner. Le contrôleur vérifie aussi qu'une commande est récente, bien formée, et qu'elle respecte les phases autorisées.</p>
+<div class="shot"><img src="assets/feuvert-phases.jpg" alt="Les quatre phases du cycle : Nord–Sud au vert, transition, Est–Ouest au vert, transition, avec un intervalle « tous rouges » entre les deux." loading="lazy" width="1600" height="870"></div>
+<h4>Attaquer pour vérifier</h4><p>Dans un réseau de test isolé, on joue l'attaquant : client sans autorisation, message falsifié, commande périmée, coupure de liaison. On attend un refus vérifiable, une trace dans les journaux, et des feux qui continuent de tourner en local. Après une coupure, le carrefour republie son état réel et rejette les commandes arrivées trop tard.</p>
+<p class="note">Projet d'innovation industrielle de l'ESILV (PI²), avec un partenaire extérieur. En cours.</p>` },
     { icon: 'liv', name: 'Liv In Paris', tag: ['Terminé', 'live'], desc: 'Une application sur le modèle d\'Uber, avec Dijkstra pour le trajet le plus court.', meta: '2024 · graphes · Dijkstra',
       body: `<p class="lead">Une application qui reprend le principe d'Uber.</p><p>Paris est modélisé comme un graphe : l'algorithme de Dijkstra y calcule le trajet le plus court entre deux points. Une interface permet ensuite de passer commande.</p>` },
     { icon: 'hexa', name: 'Robot hexapode', tag: ['Terminé', 'live'], desc: 'La conception 3D d\'un robot à six pattes.', meta: '2023 · PIX 1 · SolidWorks',
@@ -1391,6 +1447,13 @@ class Row {
     const turn = -s * TURN * smooth(Math.min(a, 1));
     return { d, x, size: this.cs * boost, turn };
   }
+  // la tuile sous le curseur, ou -1
+  hit(e){
+    const b = this.stage.getBoundingClientRect(), rel = e.clientX - b.left - b.width / 2, rely = e.clientY - b.top - b.height / 2;
+    let best = -1, bd = 1e9;
+    for (let i = 0; i < this.n; i++) { const s = this.slot(i), half = s.size * 0.5 * Math.max(0.45, Math.cos(s.turn)); const dd = Math.abs(rel - s.x); if (dd < half && Math.abs(rely) < s.size * 0.5 && Math.abs(s.d) < bd) { bd = Math.abs(s.d); best = i; } }
+    return best;
+  }
   go(i){ this.target = clamp(Math.round(i), 0, this.n - 1); }
   touch(){ this.lastUser = performance.now(); }
   bind(){
@@ -1412,6 +1475,12 @@ class Row {
       } else this.go(this.pos - down.vx * 1000 / this.sp * 0.12);
       down = null;
     });
+    st.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      if (down && down.moved) { pvHide(); return; }
+      const i = this.hit(e); if (i >= 0) pvShow(this.items[i].icon, e); else pvHide();
+    });
+    st.addEventListener('pointerleave', pvHide);
     st.addEventListener('pointercancel', () => { if (!down) return; down = null; st.classList.remove('drag'); this.go(this.pos); });
     let wt = 0;
     st.addEventListener('wheel', e => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); this.touch(); this.pos = clamp(this.pos + e.deltaX / this.sp, -0.3, this.n - 0.7); this.target = this.pos; this.v = 0; clearTimeout(wt); wt = setTimeout(() => this.go(this.pos), 120); }, { passive: false });
@@ -1490,6 +1559,46 @@ class Row {
   }
 }
 const sheet = document.getElementById('sheet'), menu = document.getElementById('menu');
+
+/* ================= l'aperçu qui suit la souris ================= */
+const HAY_ROWS = [['Normal', 50000, 1], ['Backdoor', 20000], ['DDoS', 20000], ['DoS', 20000], ['Injection', 20000], ['Password', 20000], ['Ransomware', 20000], ['Scanning', 20000], ['XSS', 20000], ['MITM', 1043]];
+const PREVIEW = {
+  cloud: { img: 'assets/cloud-burst.png', w: 380 }, audit: { img: 'assets/audit-heatmap.jpg', w: 360 }, feuvert: { img: 'assets/feuvert-archi.jpg', w: 380 },
+  mirage: { img: 'assets/mirage-site.jpg', w: 380 }, voiture: { img: 'assets/voiture-ideale.jpg', w: 380 }, overdisc: { img: 'assets/overdisc-graphe.jpg', w: 400 },
+  topple: { img: 'assets/topple-screen.jpg', w: 190 },
+  haystack: { w: 300, html: `<div class="pvc"><p>TON_IoT : 211 043 flux, dix classes</p>${HAY_ROWS.map(([n, v, nn]) => `<div class="r${nn ? ' n' : ''}"><span>${n}</span><span class="t"><i style="width:${(v / 50000 * 100).toFixed(1)}%"></i></span><span>${v.toLocaleString('fr-FR')}</span></div>`).join('')}</div>` }
+};
+const pv = document.getElementById('pv'), pvIn = pv.querySelector('.pv-in');
+const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+let pvKey = null, pvOn = false, pvT = { x: 0, y: 0 }, pvP = { x: 0, y: 0 }, pvRaf = 0, pvLastX = 0;
+// on précharge les images, pour qu'elles apparaissent sans attendre
+if (finePointer) addEventListener('load', () => setTimeout(() => Object.values(PREVIEW).forEach(v => { if (v.img) { const i = new Image(); i.src = v.img; } }), 1500));
+function pvShow(key, e){
+  if (!finePointer || introOn || !PREVIEW[key]) { pvHide(); return; }
+  const P = PREVIEW[key];
+  if (key !== pvKey) {
+    pvKey = key; pvIn.style.setProperty('--pw', P.w + 'px');
+    pvIn.innerHTML = P.html || `<img src="${P.img}" alt="">`;
+  }
+  pvT.x = e.clientX; pvT.y = e.clientY;
+  if (!pvOn) { pvOn = true; pvP.x = pvT.x; pvP.y = pvT.y; pv.classList.add('on'); }
+  if (!pvRaf) pvRaf = requestAnimationFrame(pvTick);
+}
+function pvHide(){ if (!pvOn) return; pvOn = false; pv.classList.remove('on'); }
+function pvTick(){
+  pvRaf = 0;
+  const k = reduce ? 1 : 0.2; pvP.x += (pvT.x - pvP.x) * k; pvP.y += (pvT.y - pvP.y) * k;
+  const w = pvIn.offsetWidth, h = pvIn.offsetHeight, gap = 26;
+  // l'aperçu se place en bas à droite du curseur, et bascule de l'autre côté près des bords
+  const left = pvP.x + gap + w > innerWidth - 12, up = pvP.y + gap + h > innerHeight - 12;
+  const x = left ? pvP.x - gap - w : pvP.x + gap, y = up ? Math.max(12, pvP.y - gap - h) : pvP.y + gap;
+  const vx = pvT.x - pvP.x, rot = reduce ? 0 : Math.max(-5, Math.min(5, vx * 0.06));
+  pvIn.style.setProperty('--po', `${left ? '100%' : '0'} ${up ? '100%' : '0'}`);
+  pv.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+  if (pvOn || Math.abs(vx) > 0.5) pvRaf = requestAnimationFrame(pvTick);
+}
+addEventListener('scroll', pvHide, { passive: true });
+
 /* ================= projets scolaires et personnels : la vitrine ================= */
 // ce que chaque carte montre en plus de la description : des chiffres tirés des fiches, les outils, un visuel
 const CARD = {
@@ -1505,11 +1614,13 @@ const CARD = {
       <div class="br"><span>Phi-3</span><span class="tr"><i style="width:40.6%"></i></span><b>20,31 %</b></div>
       <p class="bn"><b>38 %</b><span>de réussite pour l'attaque la plus efficace : demander d'inverser les caractères du secret.</span></p></div>` },
   agents: { kpi: [['4', 'modèles cibles, du local au commercial']], stack: ['AgentDojo', 'Qwen 8B', 'OVHcloud'] },
+  haystack: { kpi: [['1 %', 'de fausses alertes au plus, pour 95 % d\'attaques visées']], stack: ['Python', 'scikit-learn', 'AutoML', 'Autoencodeur'] },
+  feuvert: { kpi: [['0', 'double feu vert, même sous attaque : la règle']], stack: ['ESP32', 'MQTT/TLS', 'Docker', 'FastAPI', 'Grafana'] },
   paperbot: { stack: ['Classification', 'Équipe de 4'] },
   liv: { stack: ['Graphes', 'Dijkstra'] },
   hexa: { stack: ['SolidWorks', 'Conception 3D'] }
 };
-const ORDER = ['cloud', 'audit', 'agents', 'paperbot', 'liv', 'hexa'];
+const ORDER = ['cloud', 'audit', 'agents', 'haystack', 'feuvert', 'paperbot', 'liv', 'hexa'];
 class Showcase {
   constructor(sec, items){
     this.items = ORDER.map(k => items.find(it => it.icon === k)).filter(Boolean).concat(items.filter(it => !ORDER.includes(it.icon)));
@@ -1523,7 +1634,14 @@ class Showcase {
       const txt = `<div class="top"><canvas class="pi" width="256" height="256" aria-hidden="true"></canvas><span class="tag ${it.tag[1]}">${it.tag[0]}</span></div>
         <h3>${it.name}</h3><p class="d">${it.desc}</p>${kpi}${st}<div class="ft"><span class="more">Lire la fiche <i>→</i></span>${ln}</div>`;
       el.innerHTML = `<button class="hit" type="button" aria-label="Ouvrir la fiche : ${it.name.replace(/"/g, '&quot;')}"></button>` + (c.feat ? `<div class="txt">${txt}</div><div class="vis">${c.vis || ''}</div>` : txt);
-      el.querySelector('.hit').addEventListener('click', () => openDetail(it));
+      el.querySelector('.hit').addEventListener('click', () => { pvHide(); openDetail(it); });
+      const zones = [el.querySelector('canvas.pi'), el.querySelector('h3')];
+      el.addEventListener('pointermove', e => {
+        if (e.pointerType !== 'mouse') return;
+        const on = zones.some(z => { const r = z.getBoundingClientRect(); return e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6; });
+        if (on) pvShow(it.icon, e); else pvHide();
+      });
+      el.addEventListener('pointerleave', pvHide);
       this.cvs.push([el.querySelector('canvas.pi'), it]);
       box.appendChild(el);
     });
@@ -1622,7 +1740,7 @@ veil.addEventListener('click', closeSheets);
 document.getElementById('sheetX').addEventListener('click', closeSheets);
 let sheetAnim = 0;
 function openDetail(it){
-  if (!it) return;
+  if (!it) return; pvHide();
   const ic = sheet.querySelector('canvas.ic'), im = document.getElementById('dImg');
   if (it.logo) { im.src = it.logo; im.hidden = false; ic.hidden = true; }
   else {
