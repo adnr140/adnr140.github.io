@@ -392,6 +392,8 @@ footer button:hover{color:#fff}
 .detail .links a{display:inline-flex;align-items:center;height:38px;padding:0 16px;border-radius:999px;background:var(--chip);text-decoration:none;font-size:14px}
 .detail .links a:first-child{background:var(--ink);color:#fff}
 .detail .note{margin-top:20px;font-size:12.5px;color:var(--mute)}
+.detail .body ul.chips{display:flex;flex-wrap:wrap;gap:8px;border:0}
+.detail .body ul.chips li{display:block;padding:6px 12px;border:0;border-radius:999px;background:var(--chip);font-size:13px;color:var(--ink)}
 @media (max-width:480px){.detail .body li{grid-template-columns:72px minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}html{scroll-behavior:auto}}
 </style>
@@ -1260,9 +1262,13 @@ const DATA = {
     { logo: 'assets/logos/leorunning.png', name: 'LeoRunning Club', role: 'Responsable communication, antenne nantaise', meta: 'Mai 2024 – mai 2025 · Nantes',
       desc: 'Lancement de l\'antenne nantaise : 25 recrues, une communauté de plus de 150 membres, et un événement à 10 000 € de budget.',
       body: `<p class="lead">J'ai lancé l'antenne nantaise d'un club de course à pied.</p><ul><li><b>25</b><span>recrues</span></li><li><b>150+</b><span>membres dans la communauté, dont j'animais les réseaux sociaux</span></li><li><b>10 000 €</b><span>de budget pour un événement sportif que j'ai aidé à organiser</span></li></ul>` },
-    { icon: 'maths', name: 'Professeur particulier de maths', role: 'Freelance, en ligne', meta: 'Août – déc. 2025 · depuis Bangkok',
-      desc: 'Des cours particuliers en ligne, donnés pendant mon semestre d\'échange.',
-      body: `<p class="lead">Des cours particuliers de maths en ligne, donnés depuis Bangkok pendant le semestre d'échange.</p>` },
+    { icon: 'maths', name: 'Professeur particulier de maths', role: 'Freelance, à distance et en présentiel', meta: 'Du collège à la terminale',
+      desc: 'Plusieurs élèves accompagnés en maths, du collège à la terminale, dont la préparation au brevet ; à distance comme en présentiel.',
+      body: `<p class="lead">J'ai accompagné plusieurs élèves en maths, du collège à la terminale, à distance comme en présentiel.</p>
+<ul><li><b>Collège</b><span>Les bases, et la préparation au brevet.</span></li>
+<li><b>Première</b><span>Le passage aux maths de spécialité.</span></li>
+<li><b>Terminale</b><span>Le programme de l'année, en vue du bac.</span></li></ul>
+<p>Expliquer une notion à quelqu'un, c'est vérifier qu'on la comprend vraiment : chaque élève demande une façon différente de la présenter.</p>` },
     { logo: 'assets/logos/kloviss.png', name: 'Kloviss', role: 'Ingénieur logiciel et sécurité IA, stage', meta: 'Juin – août 2026',
       desc: 'Start-up d\'IA souveraine pour les PME. Tests d\'intrusion et red teaming à chaque mise en production, anonymisation portée de 92,5 % à 99 %, conformité RGPD.',
       sub: { logo: 'assets/logos/machina.png', text: 'Machina IA : plus de 200 fonctionnalités et correctifs livrés' },
@@ -1272,9 +1278,15 @@ const DATA = {
 <li><b>99 %</b><span>Précision du moteur d'anonymisation refondu, contre 92,5 % : 7,5 fois moins de fuites.</span></li>
 <li><b>100 %</b><span>Mises en production testées : scan OWASP ZAP et red teaming IA avant chaque sortie. Avant : aucune.</span></li>
 <li><b>200+</b><span>Fonctionnalités et correctifs livrés sur Machina IA, avec un développement assisté par IA (Claude Code).</span></li></ul>` },
-    { logo: 'assets/logos/devinci-junior.png', name: 'Devinci Junior', role: 'Intervenant', meta: 'Depuis sept. 2026',
-      desc: 'Des missions de sécurité, logiciel, data et audit pour les clients de la junior-entreprise de l\'ESILV.',
-      body: `<p class="lead">Des missions pour les clients de la junior-entreprise de l'ESILV.</p><p>Sécurité, logiciel, data et audit : les mêmes domaines que Mirage.</p>` }
+    { logo: 'assets/logos/devinci-junior.png', name: 'DeVinci Junior', role: 'Intervenant', meta: 'Depuis sept. 2026',
+      desc: 'La Junior-Entreprise du Pôle Léonard de Vinci : de vraies missions pour des entreprises, de la SNCF à Dassault Systèmes. J\'y interviens en sécurité, logiciel, data et audit.',
+      body: `<p class="lead">La Junior-Entreprise du Pôle Léonard de Vinci : des étudiants ingénieurs, designers et managers qui mènent de vraies missions pour des entreprises, comme un cabinet de conseil.</p>
+<p>Elle couvre quatre métiers : le digital, le design, l'ingénierie, et le conseil en stratégie. Chaque mission suit le même chemin : un premier contact sous 48 heures, une proposition commerciale, une équipe montée autour d'un chef de projet et d'experts techniques, un suivi régulier, puis une livraison garantie.</p>
+<h4>Mon rôle</h4><p>J'y interviens sur des missions de sécurité, de logiciel, de data et d'audit : les mêmes domaines que Mirage, mais pour les clients de la Junior.</p>
+<h4>Ils lui ont fait confiance</h4>
+<ul class="chips"><li>SNCF</li><li>IBM</li><li>Crédit Agricole</li><li>Engie</li><li>Thales Alenia Space</li><li>Dassault Systèmes</li><li>PwC</li><li>Groupe VYV</li><li>Groupama</li><li>Paris La Défense Arena</li><li>Océa Smart Building</li><li>Natran</li><li>Ville de Courbevoie</li></ul>
+<p class="note">Clients et partenaires cités par DeVinci Junior sur son site. Je n'ai pas travaillé pour chacun d'eux.</p>
+<div class="links">${L('https://devincijunior.fr/', 'Le site de DeVinci Junior ↗')}</div>` }
   ],
   edu: [
     { logo: 'assets/logos/esilv.png', name: 'ESILV', role: 'Diplôme d\'ingénieur, cybersécurité GRC et souveraineté numérique', meta: '2023 – 2028 (prévu) · Paris',
